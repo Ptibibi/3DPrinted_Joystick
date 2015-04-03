@@ -114,6 +114,12 @@
 #define LED_SIZE_MAX 90
 
 
-///////////////////////////////////   INTERRUPTION    /////////////////////////////
+///////////////////////////////////      RATION       /////////////////////////////
+#define POSITION_ANALOG_THROTTLE_OUTPUT_MIN -32768
+#define POSITION_ANALOG_THROTTLE_OUTPUT_MAX 32767
+#define POSITION_ANALOG_AXE_OUTPUT_MIN -32768
+#define POSITION_ANALOG_AXE_OUTPUT_MAX 32767
+#define POSITION_ANALOG_DPAD_OUTPUT_MIN -100
+#define POSITION_ANALOG_DPAD_OUTPUT_MAX 100
 
 #endif /* _CONFIG_JOYSTICK_6DOF_H_ */

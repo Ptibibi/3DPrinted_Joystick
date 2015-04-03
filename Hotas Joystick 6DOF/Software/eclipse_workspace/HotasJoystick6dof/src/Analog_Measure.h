@@ -19,8 +19,7 @@
 class CAnalogMeasure {
   //Method
   public:
-    CAnalogMeasure();
-    CAnalogMeasure(uint16_t analogIndex, uint16_t pinNumber, int16_t outputMin, int16_t outputMax, uint32_t storageAddr, const char* name, CDisplay* pDisp);
+    CAnalogMeasure(_gpioxConfig conf, int16_t outputMin, int16_t outputMax, uint32_t storageAddr, const char* name, CDisplay* pDisp);
     ~CAnalogMeasure();
     void initialize();
     int16_t getMeasure();
@@ -37,8 +36,7 @@ class CAnalogMeasure {
   private:
     CDisplay* display;
     
-    uint16_t index;
-    uint16_t pin;
+    _gpioxConfig config;
     uint32_t storageAddrMeasure;
     const char* nameMeasure;
     

@@ -1,25 +1,9 @@
 #include "Analog_Measure.h"
 
-CAnalogMeasure::CAnalogMeasure() {
-  display = NULL;
-  index = 0;
-  pin = 0;
-  inputRatioMin = 0;
-  inputRatioMax = 0;
-  outputRatioMin = 0;
-  outputRatioMax = 0;
-  lastValue = 0;
-  storageAddrMeasure = 0;
-  nameMeasure = "";
-  coeffA = 0;
-  coeffB = 0;
-}
-
-CAnalogMeasure::CAnalogMeasure(uint16_t analogIndex, uint16_t pinNumber, int16_t outputMin, int16_t outputMax, uint32_t storageAddr, const char* name, CDisplay* pDisp) {
+CAnalogMeasure::CAnalogMeasure(_gpioxConfig conf, int16_t outputMin, int16_t outputMax, uint32_t storageAddr, const char* name, CDisplay* pDisp) {
   display = pDisp;
   //DueFlashStorage EEPROM();
-  index = analogIndex;
-  pin = pinNumber;
+  config = conf;
   inputRatioMin = 0;
   inputRatioMax = 0;
   outputRatioMin = outputMin;
@@ -96,7 +80,7 @@ void CAnalogMeasure::setCalibration() {
   display->print("CALIBRATION\n%s\n%s", nameMeasure, "Set MAX! --1--");
   HAL_Delay(1000);
   display->print("CALIBRATION\n%s\n%s", nameMeasure, "Set MAX! --0--");
-  inputRatioMax = getAnalogValue();
+  //inputRatioMax = getAnalogValue();
   HAL_Delay(1000);
   
   display->print("CALIBRATION\n%s\n%s", nameMeasure, "Set MIN!");
@@ -108,7 +92,7 @@ void CAnalogMeasure::setCalibration() {
   display->print("CALIBRATION\n%s\n%s", nameMeasure, "Set MIN! --1--");
   HAL_Delay(1000);
   display->print("CALIBRATION\n%s\n%s", nameMeasure, "Set MIN! --0--");
-  inputRatioMin = getAnalogValue();
+  //inputRatioMin = getAnalogValue();
   HAL_Delay(1000);
   
   display->print("CALIBRATION\n%s\n%s", nameMeasure, "Finished");
