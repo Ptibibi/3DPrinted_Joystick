@@ -17,6 +17,8 @@
 #include "Config_Joystick_6Dof.h"
 #include "Typedef_Joystick_6Dof.h"
 
+#include "Timer.h"
+#include "Config_Gpio.h"
 #include "Display.h"
 
 class CButtonMatrix {
@@ -41,6 +43,7 @@ class CButtonMatrix {
     _gpioxConfig colMap[BUTTON_MATRIX_NB_COLS];
     GPIO_PinState buttonStatus[BUTTON_MATRIX_NB];
     uint16_t stateCol;
+    Timer timer;
 
 };
 

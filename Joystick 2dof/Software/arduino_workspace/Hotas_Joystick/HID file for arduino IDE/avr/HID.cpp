@@ -258,23 +258,21 @@ const u8 _hidReportDescriptor[] = {
 	0x75, 0x01,							//   REPORT_SIZE (1)
 	0x95, 0x20,							//   REPORT_COUNT (32)
 	0x81, 0x02,							//   INPUT (Data,Var,Abs)
-	// 7 16bit Axis
+	// 5 16bit Axis
 	0x05, 0x01,							//   USAGE_PAGE (Generic Desktop)
 	0xa1, 0x00,							//   COLLECTION (Physical)
-	0x09, 0x30,							//     USAGE (X)
-	0x09, 0x31,							//     USAGE (Y)
-	0x09, 0x32,							//     USAGE (Z)
 	0x09, 0x33,							//     USAGE (Rx)
 	0x09, 0x34,							//     USAGE (Ry)
+	0x09, 0x35,							//     USAGE (Rz)
 	0x09, 0x30,							//     USAGE (X)
 	0x09, 0x31,							//     USAGE (Y)
 	0x16, 0x00, 0x80,					//     LOGICAL_MINIMUM (-32768)
 	0x26, 0xFF, 0x7F,					//     LOGICAL_MAXIMUM (32767)
 	0x75, 0x10,							//     REPORT_SIZE (16)
-	0x95, 0x07,							//     REPORT_COUNT (7)
+	0x95, 0x05,							//     REPORT_COUNT (5)
 	0x81, 0x02,							//     INPUT (Data,Var,Abs)
 	0xc0,								//   END_COLLECTION
-	// 1 16bit Throttle Left
+	// 1 16bit Throttle
 	0x05, 0x02,							//   USAGE_PAGE (Simulation Controls)
 	0x09, 0xBB,							//   USAGE (Throttle)
 	0x16, 0x00, 0x80,					//   LOGICAL_MINIMUM (-32768)
@@ -282,13 +280,14 @@ const u8 _hidReportDescriptor[] = {
 	0x75, 0x10,							//   REPORT_SIZE (16)
 	0x95, 0x01,							//   REPORT_COUNT (1)
 	0x81, 0x02,							//   INPUT (Data,Var,Abs)
-	// 1 Hat Switches
+	// 2 Hat Switches
 	0x05, 0x01,							//   USAGE_PAGE (Generic Desktop)
+	0x09, 0x39,							//   USAGE (Hat switch)
 	0x09, 0x39,							//   USAGE (Hat switch)
 	0x15, 0x01,							//   LOGICAL_MINIMUM (1)
 	0x25, 0x08,							//   LOGICAL_MAXIMUM (8)
-	0x95, 0x01,							//   REPORT_COUNT (2)
-	0x75, 0x08,							//   REPORT_SIZE (8)
+	0x95, 0x02,							//   REPORT_COUNT (2)
+	0x75, 0x04,							//   REPORT_SIZE (4)
 	0x81, 0x02,							//   INPUT (Data,Var,Abs)
 	0xc0,
 #endif

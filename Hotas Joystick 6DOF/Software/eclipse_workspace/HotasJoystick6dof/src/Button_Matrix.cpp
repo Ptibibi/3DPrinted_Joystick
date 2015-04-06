@@ -8,38 +8,25 @@ CButtonMatrix::CButtonMatrix(_gpioxConfig* pRowMap, _gpioxConfig* pColMap, uint6
 
   timeNextUpdate = 0;
   stateCol = 0;
+
+  timer.start();
 }
 
 CButtonMatrix::~CButtonMatrix() {
 }
 
 void CButtonMatrix::initialize() {
-  //RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);
-  __GPIOA_CLK_ENABLE();
-
   //Set ROWS
   uint16_t i;
   for (i=0; i<BUTTON_MATRIX_NB_ROWS; i++) {
-    GPIO_InitTypeDef GPIO_InitDef;
-    GPIO_InitDef.Pin = rowMap[i].Pin;
-    GPIO_InitDef.Mode = rowMap[i].Mode;
-    GPIO_InitDef.Pull = rowMap[i].Pull;
-    GPIO_InitDef.Speed = rowMap[i].Speed;
-    GPIO_InitDef.Alternate = rowMap[i].Alternate;
-    HAL_GPIO_Init(rowMap[i].gpiox, &GPIO_InitDef);
+      setConfigGPIO(rowMap[i]);
   }
 
   //Set COLS
   for (i=0; i<BUTTON_MATRIX_NB_COLS; i++) {
-    GPIO_InitTypeDef GPIO_InitDef;
-    GPIO_InitDef.Pin = colMap[i].Pin;
-    GPIO_InitDef.Mode = colMap[i].Mode;
-    GPIO_InitDef.Pull = colMap[i].Pull;
-    GPIO_InitDef.Speed = colMap[i].Speed;
-    GPIO_InitDef.Alternate = colMap[i].Alternate;
-    HAL_GPIO_Init(colMap[i].gpiox, &GPIO_InitDef);
+      setConfigGPIO(colMap[i]);
   }
-  HAL_Delay(100);
+  timer.sleep(100);
 
   stateCol=1;
   setMatrix(stateCol);

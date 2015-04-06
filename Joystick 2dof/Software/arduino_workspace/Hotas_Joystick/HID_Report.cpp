@@ -3,10 +3,6 @@
 CHidReport::CHidReport() {
 }
 
-CHidReport::CHidReport(CU8gDisplay* pDisp) {
-  display = pDisp;
-}
-
 CHidReport::~CHidReport() {
 }
 
@@ -14,7 +10,7 @@ void CHidReport::initialize() {
   Hotas.begin();
 }
 
-void CHidReport::sendReport(bool* pButton, int x, int y, int z, int rX, int rY, int throttleValue, byte dPadStatus) {
+void CHidReport::sendReport(bool* pButton, int rx, int ry, int rz, int x, int y, int throttleValue, byte dPad1Status, byte dPad2Status) {
   int i;
   for (i = 0; i < BUTTON_GAME_NB; i++)
   {
@@ -24,18 +20,16 @@ void CHidReport::sendReport(bool* pButton, int x, int y, int z, int rX, int rY, 
       Hotas.release(i + 1);
   }
   
+  Hotas.rxAxis(rx);
+  Hotas.ryAxis(ry);
+  Hotas.rzAxis(rz);
   Hotas.xAxis(x);
   Hotas.yAxis(y);
-  Hotas.zAxis(z);
-  Hotas.rxAxis(rX);
-  Hotas.ryAxis(rY);
-  Hotas.xAxis2(0);
-  Hotas.yAxis2(0);
   
   Hotas.throttle(throttleValue);
   
-  Hotas.dPad1(dPad1);
-  Hotas.dPad2(dPad2);
+  Hotas.dPad1(dPad1Status);
+  Hotas.dPad2(dPad2Status);
   
   Hotas.write();
 }

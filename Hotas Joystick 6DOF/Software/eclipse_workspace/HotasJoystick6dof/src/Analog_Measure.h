@@ -11,9 +11,14 @@
 #include "stm32f4xx_hal_adc.h"
 #include "stm32f4xx_hal_sram.h"
 
+//Common files
 #include "Config_Joystick_6Dof.h"
 #include "Typedef_Joystick_6Dof.h"
 
+//Hardware library
+#include "Config_Gpio.h"
+
+//Functional library
 #include "Display.h"
 
 class CAnalogMeasure {

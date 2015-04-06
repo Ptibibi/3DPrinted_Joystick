@@ -3,11 +3,9 @@
 CButtonMatrix::CButtonMatrix() {
 }
 
-CButtonMatrix::CButtonMatrix(byte* pRowMap, byte* pColMap, unsigned long updateDelay, CU8gDisplay* pDisp) {
-  display = pDisp;
+CButtonMatrix::CButtonMatrix(byte* pRowMap, byte* pColMap) {
   memcpy(rowMap, pRowMap, sizeof(byte) * BUTTON_MATRIX_NB_ROWS);
   memcpy(colMap, pColMap, sizeof(byte) * BUTTON_MATRIX_NB_COLS);
-  nextDelay = updateDelay;
 }
 
 CButtonMatrix::~CButtonMatrix() {
@@ -28,7 +26,6 @@ void CButtonMatrix::initialize() {
   
   stateCol=1;
   setMatrix(stateCol);
-  timeNextUpdate = millis() + nextDelay;
 }
 
 void CButtonMatrix::setMatrix(int stateCol) {
@@ -68,11 +65,8 @@ void CButtonMatrix::updateButtonStatus() {
 }
 
 void CButtonMatrix::getButtonStatus(bool* pButtonStatus) {
-  if (timeNextUpdate <= millis()) {
-    timeNextUpdate = millis() + BUTTON_MATRIX_DELAY_UPDATE;
-    updateButtonStatus();
-    nextButtonMatrixState();
-  }
+  updateButtonStatus();
+  nextButtonMatrixState();
   memcpy(pButtonStatus, buttonStatus, sizeof(buttonStatus));
 }
 

@@ -1031,20 +1031,17 @@ typedef union {
 		uint8_t button31 : 1;
 		uint8_t button32 : 1;
 
-		int16_t	xAxis;
-		int16_t	yAxis;
-
 		int16_t	rxAxis;
 		int16_t	ryAxis;
 
-		int16_t	zAxis;
-		int16_t	xAxis2;
+		int16_t	rzAxis;
+		int16_t	xAxis;
 		
-		int16_t	yAxis2;
+		int16_t	yAxis;
 		int16_t	throttle;
 		
-		int16_t	dPad1 : 8;
-		int16_t	dPad2 : 8;
+		int8_t	dPad1 : 4;
+		int8_t	dPad2 : 4;
 	};
 } HID_GamepadReport_Data_t;
 
@@ -1070,16 +1067,14 @@ public:
 	inline void releaseAll(void){ memset(&_report, 0x00, sizeof(_report)); }
 
 	inline void buttons(uint32_t b){ _report.buttons = b; }
-	inline void xAxis(int16_t a){ _report.xAxis = a; }
-	inline void yAxis(int16_t a){ _report.yAxis = a; }
-	inline void zAxis(int16_t a){ _report.zAxis = a; }
 	inline void rxAxis(int16_t a){ _report.rxAxis = a; }
 	inline void ryAxis(int16_t a){ _report.ryAxis = a; }
-	inline void xAxis2(int16_t a){ _report.xAxis2 = a; }
-	inline void yAxis2(int16_t a){ _report.yAxis2 = a; }
+	inline void rzAxis(int16_t a){ _report.rzAxis = a; }
+	inline void xAxis(int16_t a){ _report.xAxis = a; }
+	inline void yAxis(int16_t a){ _report.yAxis = a; }
 	inline void throttle(int16_t a){ _report.throttle = a; }
-	inline void dPad1(int16_t d){ _report.dPad1 = d; }
-	inline void dPad2(int16_t d){ _report.dPad2 = d; }
+	inline void dPad1(int8_t d){ _report.dPad1 = d; }
+	inline void dPad2(int8_t d){ _report.dPad2 = d; }
 private:
 	HID_GamepadReport_Data_t _report;
 };
@@ -1148,17 +1143,14 @@ typedef union {
 		uint8_t button31 : 1;
 		uint8_t button32 : 1;
 
-		int16_t	xAxis;
-		int16_t	yAxis;
-		
-		int16_t	zAxis;
 		int16_t	rxAxis;
-		
 		int16_t	ryAxis;
-		int16_t	rzAxis;
 		
-		int16_t	throttleLeft;
-		int16_t	throttleRight;
+		int16_t	rzAxis;
+		int16_t	xAxis;
+		
+		int16_t	yAxis;
+		int16_t	throttle;
 
 		uint8_t	dPad1 : 4;
 		uint8_t	dPad2 : 4;
@@ -1187,14 +1179,12 @@ public:
 	inline void releaseAll(void){ memset(&_report, 0x00, sizeof(_report)); }
 
 	inline void buttons(uint32_t b){ _report.buttons = b; }
-	inline void xAxis(int16_t a){ _report.xAxis = a; }
-	inline void yAxis(int16_t a){ _report.yAxis = a; }
-	inline void zAxis(int16_t a){ _report.zAxis = a; }
 	inline void rxAxis(int16_t a){ _report.rxAxis = a; }
 	inline void ryAxis(int16_t a){ _report.ryAxis = a; }
 	inline void rzAxis(int16_t a){ _report.rzAxis = a; }
-	inline void throttleLeft(int16_t a){ _report.throttleLeft = a; }
-	inline void throttleRight(int16_t a){ _report.throttleRight = a; }
+	inline void xAxis(int16_t a){ _report.xAxis = a; }
+	inline void yAxis(int16_t a){ _report.yAxis = a; }
+	inline void throttle(int16_t a){ _report.throttle = a; }
 	inline void dPad1(int8_t d){ _report.dPad1 = d; }
 	inline void dPad2(int8_t d){ _report.dPad2 = d; }
 private:

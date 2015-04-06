@@ -1,5 +1,7 @@
-#ifndef _CONFIG_JOYSTICK_6DOF_H_
-#define _CONFIG_JOYSTICK_6DOF_H_
+#ifndef _CONFIG_JOYSTICK_H_
+#define _CONFIG_JOYSTICK_H_
+
+#include "arduino.h"
 
 ///////////////////////////////////      STORAGE      /////////////////////////////
 #define STORAGE_CODE_NOK 0
@@ -8,14 +10,13 @@
 #define STORAGE_PART_SYSTEM_ADDR_START 100
 
 #define STORAGE_ANALOG_MEASURE_ADDR_START 200
-#define STORAGE_ANALOG_MEASURE_THROTTLE_ADDR_OFFSET 0
-#define STORAGE_ANALOG_MEASURE_PDAD_X_ADDR_OFFSET 5
-#define STORAGE_ANALOG_MEASURE_PDAD_Y_ADDR_OFFSET 10
+
+#define STORAGE_ANALOG_MEASURE_AXE_RX_ADDR_OFFSET 0
+#define STORAGE_ANALOG_MEASURE_AXE_RY_ADDR_OFFSET 5
+#define STORAGE_ANALOG_MEASURE_AXE_RZ_ADDR_OFFSET 10
 #define STORAGE_ANALOG_MEASURE_AXE_X_ADDR_OFFSET 15
 #define STORAGE_ANALOG_MEASURE_AXE_Y_ADDR_OFFSET 20
-#define STORAGE_ANALOG_MEASURE_AXE_Z_ADDR_OFFSET 25
-#define STORAGE_ANALOG_MEASURE_AXE_RX_ADDR_OFFSET 30
-#define STORAGE_ANALOG_MEASURE_AXE_RY_ADDR_OFFSET 35
+#define STORAGE_ANALOG_MEASURE_THROTTLE_ADDR_OFFSET 25
 
 
 ///////////////////////////////////   BUTTON MATRIX   /////////////////////////////
@@ -41,8 +42,6 @@
 #define BUTTON_GAME_NB 32
 #define BUTTON_CONTROL_NB 8
 
-#define BUTTON_MATRIX_DELAY_UPDATE 5
-
 ///////////////////////////////////        SPI        /////////////////////////////
 #define SPI_PIN_CLK 9
 #define SPI_PIN_MOSI 10
@@ -51,14 +50,12 @@
 
 
 ///////////////////////////////////   ANALOG INPUT    /////////////////////////////
-#define ANALOG_INPUT_PIN_AXE_X A0
-#define ANALOG_INPUT_PIN_AXE_Y A1
-#define ANALOG_INPUT_PIN_AXE_Z A4
-#define ANALOG_INPUT_PIN_AXE_TX A5
-#define ANALOG_INPUT_PIN_AXE_TY A6
-#define ANALOG_INPUT_PIN_THROTTLE A7
-#define ANALOG_INPUT_PIN_DPAD_X A9
-#define ANALOG_INPUT_PIN_DPAD_Y A8
+#define ANALOG_INPUT_PIN_AXE_RX A0
+#define ANALOG_INPUT_PIN_AXE_RY A1
+#define ANALOG_INPUT_PIN_AXE_RZ A2
+#define ANALOG_INPUT_PIN_AXE_X A3
+#define ANALOG_INPUT_PIN_AXE_Y A4
+#define ANALOG_INPUT_PIN_THROTTLE A5
 
 
 ///////////////////////////////////    ANALOG DPAD    /////////////////////////////
@@ -73,4 +70,4 @@
 #define POSITION_ANALOG_DPAD_OUTPUT_MIN -100
 #define POSITION_ANALOG_DPAD_OUTPUT_MAX 100
 
-#endif /* _CONFIG_JOYSTICK_6DOF_H_ */
+#endif /* _CONFIG_JOYSTICK_H_ */

@@ -20,6 +20,8 @@ CAnalogMeasure::~CAnalogMeasure() {
 
 void CAnalogMeasure::initialize() {
   //pinMode(pin, INPUT);
+  setConfigGPIO(config);
+  //and analogconfig
   initCoeff();
   updateCoeff();
 }
