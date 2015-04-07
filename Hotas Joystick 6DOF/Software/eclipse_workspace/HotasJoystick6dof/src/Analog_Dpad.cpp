@@ -1,13 +1,9 @@
 #include "Analog_Dpad.h"
 
-CAnalogDpad::CAnalogDpad() {
-  display = NULL;
-  neutral = 0;
-}
-
-CAnalogDpad::CAnalogDpad(int16_t neutralZone, CDisplay* pDisp) {
-  display = pDisp;
+CAnalogDpad::CAnalogDpad(int16_t neutralZone) {
   neutral = neutralZone;
+
+  timer.start();
 }
 
 CAnalogDpad::~CAnalogDpad() {

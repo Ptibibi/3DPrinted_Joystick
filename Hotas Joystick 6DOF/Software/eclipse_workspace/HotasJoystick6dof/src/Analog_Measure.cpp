@@ -1,8 +1,6 @@
 #include "Analog_Measure.h"
 
-CAnalogMeasure::CAnalogMeasure(_gpioxConfig conf, int16_t outputMin, int16_t outputMax, uint32_t storageAddr, const char* name, CDisplay* pDisp) {
-  display = pDisp;
-  //DueFlashStorage EEPROM();
+CAnalogMeasure::CAnalogMeasure(_gpioxConfig conf, int16_t outputMin, int16_t outputMax, uint32_t storageAddr, const char* name) {
   config = conf;
   inputRatioMin = 0;
   inputRatioMax = 0;
@@ -13,6 +11,8 @@ CAnalogMeasure::CAnalogMeasure(_gpioxConfig conf, int16_t outputMin, int16_t out
   nameMeasure = name;
   coeffA = 0;
   coeffB = 0;
+
+  timer.start();
 }
 
 CAnalogMeasure::~CAnalogMeasure() {
@@ -31,7 +31,8 @@ void CAnalogMeasure::initCoeff() {
   //  inputRatioMax = EEPROM.read(storageAddrMeasure + 3) << 8 + EEPROM.read(storageAddrMeasure + 4);
   //}
   //else {
-    setCalibration();
+    inputRatioMin = 0;
+    inputRatioMin = 1024;
   //}
 }
 
@@ -58,12 +59,12 @@ int16_t CAnalogMeasure::getAnalogValue() {
 }
 
 int16_t CAnalogMeasure::applicCoeff(uint16_t value) {
-	float pos = coeffA * (float)value + coeffB;
-	if (outputRatioMin > pos)
-	  pos = outputRatioMin;
-	else if (pos > outputRatioMax)
-	  pos = outputRatioMax;
-	return (int16_t)pos;
+  float pos = coeffA * (float)value + coeffB;
+  if (outputRatioMin > pos)
+    pos = outputRatioMin;
+  else if (pos > outputRatioMax)
+    pos = outputRatioMax;
+  return (int16_t)pos;
 }
 
 int16_t CAnalogMeasure::getMeasure() {
@@ -71,34 +72,34 @@ int16_t CAnalogMeasure::getMeasure() {
 }
 
 void CAnalogMeasure::setCalibration() {
-  display->print("CALIBRATION\n%s\n%s", nameMeasure, "Set MAX!");
-  HAL_Delay(5000);
-  display->print("CALIBRATION\n%s\n%s", nameMeasure, "Set MAX! --3--");
-  HAL_Delay(1000);
-  display->print("CALIBRATION\n%s\n%s", nameMeasure, "Set MAX! --2--");
-  HAL_Delay(1000);
-  display->print("CALIBRATION\n%s\n%s", nameMeasure, "Set MAX! --1--");
-  HAL_Delay(1000);
-  display->print("CALIBRATION\n%s\n%s", nameMeasure, "Set MAX! --0--");
+  trace_printf("CALIBRATION\n%s\n%s", nameMeasure, "Set MAX!\n");
+  timer.sleep(5000);
+  trace_printf("CALIBRATION\n%s\n%s", nameMeasure, "Set MAX! --3--\n");
+  timer.sleep(1000);
+  trace_printf("CALIBRATION\n%s\n%s", nameMeasure, "Set MAX! --2--\n");
+  timer.sleep(1000);
+  trace_printf("CALIBRATION\n%s\n%s", nameMeasure, "Set MAX! --1--\n");
+  timer.sleep(1000);
+  trace_printf("CALIBRATION\n%s\n%s", nameMeasure, "Set MAX! --0--\n");
   //inputRatioMax = getAnalogValue();
-  HAL_Delay(1000);
+  timer.sleep(1000);
   
-  display->print("CALIBRATION\n%s\n%s", nameMeasure, "Set MIN!");
-  HAL_Delay(5000);
-  display->print("CALIBRATION\n%s\n%s", nameMeasure, "Set MIN! --3--");
-  HAL_Delay(1000);
-  display->print("CALIBRATION\n%s\n%s", nameMeasure, "Set MIN! --2--");
-  HAL_Delay(1000);
-  display->print("CALIBRATION\n%s\n%s", nameMeasure, "Set MIN! --1--");
-  HAL_Delay(1000);
-  display->print("CALIBRATION\n%s\n%s", nameMeasure, "Set MIN! --0--");
+  trace_printf("CALIBRATION\n%s\n%s", nameMeasure, "Set MIN!\n");
+  timer.sleep(5000);
+  trace_printf("CALIBRATION\n%s\n%s", nameMeasure, "Set MIN! --3--\n");
+  timer.sleep(1000);
+  trace_printf("CALIBRATION\n%s\n%s", nameMeasure, "Set MIN! --2--\n");
+  timer.sleep(1000);
+  trace_printf("CALIBRATION\n%s\n%s", nameMeasure, "Set MIN! --1--\n");
+  timer.sleep(1000);
+  trace_printf("CALIBRATION\n%s\n%s", nameMeasure, "Set MIN! --0--\n");
   //inputRatioMin = getAnalogValue();
-  HAL_Delay(1000);
+  timer.sleep(1000);
   
-  display->print("CALIBRATION\n%s\n%s", nameMeasure, "Finished");
-  HAL_Delay(1000);
+  trace_printf("CALIBRATION\n%s\n%s", nameMeasure, "Finished\n");
+  timer.sleep(1000);
   saveCoeff();
   updateCoeff();
-  display->print("%d %d\n%d %d\n%f %f", inputRatioMin, inputRatioMax, outputRatioMin, outputRatioMax, coeffA, coeffB);
-  HAL_Delay(10000);
+  trace_printf("%d %d\n%d %d\n%f %f\n", inputRatioMin, inputRatioMax, outputRatioMin, outputRatioMax, coeffA, coeffB);
+  timer.sleep(5000);
 }

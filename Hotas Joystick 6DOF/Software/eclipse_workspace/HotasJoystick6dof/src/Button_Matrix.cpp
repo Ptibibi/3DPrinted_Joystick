@@ -1,12 +1,8 @@
 #include "Button_Matrix.h"
 
-CButtonMatrix::CButtonMatrix(_gpioxConfig* pRowMap, _gpioxConfig* pColMap, uint64_t updateDelay, CDisplay* pDisp) {
-  display = pDisp;
+CButtonMatrix::CButtonMatrix(_gpioxConfig* pRowMap, _gpioxConfig* pColMap) {
   memcpy(rowMap, pRowMap, sizeof(_gpioxConfig) * BUTTON_MATRIX_NB_ROWS);
   memcpy(colMap, pColMap, sizeof(_gpioxConfig) * BUTTON_MATRIX_NB_COLS);
-  nextDelay = updateDelay;
-
-  timeNextUpdate = 0;
   stateCol = 0;
 
   timer.start();
@@ -30,7 +26,6 @@ void CButtonMatrix::initialize() {
 
   stateCol=1;
   setMatrix(stateCol);
-  timeNextUpdate = /*millis()*/ + nextDelay;
 }
 
 void CButtonMatrix::setMatrix(uint16_t stateCol) {
@@ -66,10 +61,7 @@ void CButtonMatrix::updateButtonStatus() {
 }
 
 void CButtonMatrix::getButtonStatus(GPIO_PinState* pButtonStatus) {
-  if (timeNextUpdate <= 0 ) {//millis()) {
-    timeNextUpdate = /*millis() + */BUTTON_MATRIX_DELAY_UPDATE;
-    updateButtonStatus();
-    nextButtonMatrixState();
-  }
+  updateButtonStatus();
+  nextButtonMatrixState();
   memcpy(pButtonStatus, buttonStatus, sizeof(buttonStatus));
 }

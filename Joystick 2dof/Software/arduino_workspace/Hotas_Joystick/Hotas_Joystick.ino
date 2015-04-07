@@ -40,13 +40,13 @@ byte colMap[BUTTON_MATRIX_NB_COLS] = {
 };
 
 
-CButtonMatrix* buttonMatrix = new CButtonMatrix(rowMap, colMap);
+//CButtonMatrix* buttonMatrix = new CButtonMatrix(rowMap, colMap);
 CAnalogMeasure* axeRX = new CAnalogMeasure(ANALOG_INPUT_PIN_AXE_RX, POSITION_ANALOG_AXE_OUTPUT_MIN, POSITION_ANALOG_AXE_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_AXE_RX_ADDR_OFFSET, "Axe RX");
 CAnalogMeasure* axeRY = new CAnalogMeasure(ANALOG_INPUT_PIN_AXE_RY, POSITION_ANALOG_AXE_OUTPUT_MIN, POSITION_ANALOG_AXE_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_AXE_RY_ADDR_OFFSET, "Axe RY");
-CAnalogMeasure* axeRZ = new CAnalogMeasure(ANALOG_INPUT_PIN_AXE_RZ, POSITION_ANALOG_AXE_OUTPUT_MIN, POSITION_ANALOG_AXE_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_AXE_RZ_ADDR_OFFSET, "Axe RZ");
-CAnalogMeasure* axeX = new CAnalogMeasure(ANALOG_INPUT_PIN_AXE_X, POSITION_ANALOG_AXE_OUTPUT_MIN, POSITION_ANALOG_AXE_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_AXE_X_ADDR_OFFSET, "Axe X");
-CAnalogMeasure* axeY = new CAnalogMeasure(ANALOG_INPUT_PIN_AXE_Y, POSITION_ANALOG_AXE_OUTPUT_MIN, POSITION_ANALOG_AXE_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_AXE_Y_ADDR_OFFSET, "Axe Y");
-CAnalogMeasure* throttle = new CAnalogMeasure(ANALOG_INPUT_PIN_THROTTLE, POSITION_ANALOG_THROTTLE_OUTPUT_MIN, POSITION_ANALOG_THROTTLE_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_THROTTLE_ADDR_OFFSET, "Throttle");
+//CAnalogMeasure* axeRZ = new CAnalogMeasure(ANALOG_INPUT_PIN_AXE_RZ, POSITION_ANALOG_AXE_OUTPUT_MIN, POSITION_ANALOG_AXE_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_AXE_RZ_ADDR_OFFSET, "Axe RZ");
+//CAnalogMeasure* axeX = new CAnalogMeasure(ANALOG_INPUT_PIN_AXE_X, POSITION_ANALOG_AXE_OUTPUT_MIN, POSITION_ANALOG_AXE_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_AXE_X_ADDR_OFFSET, "Axe X");
+//CAnalogMeasure* axeY = new CAnalogMeasure(ANALOG_INPUT_PIN_AXE_Y, POSITION_ANALOG_AXE_OUTPUT_MIN, POSITION_ANALOG_AXE_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_AXE_Y_ADDR_OFFSET, "Axe Y");
+//CAnalogMeasure* throttle = new CAnalogMeasure(ANALOG_INPUT_PIN_THROTTLE, POSITION_ANALOG_THROTTLE_OUTPUT_MIN, POSITION_ANALOG_THROTTLE_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_THROTTLE_ADDR_OFFSET, "Throttle");
 CHidReport* hidReport = new CHidReport();
 
 ///////////////////////////////////   SETUP    ////////////////////////////////////
@@ -57,28 +57,27 @@ void setup() {
       Serial.print("aivailable\n");
       axeRX->setCalibration();
       axeRY->setCalibration();
-      axeRZ->setCalibration();
-      axeX->setCalibration();
-      axeY->setCalibration();
-      throttle->setCalibration();
+      //axeRZ->setCalibration();
+      //axeX->setCalibration();
+      //axeY->setCalibration();
+      //throttle->setCalibration();
     }
     delay(1000);
   } while(millis() < 10000);
   Serial.end();
   
   //Initialize button matrix
-  buttonMatrix->initialize();
+  //buttonMatrix->initialize();
   
   //Initialize analog input
   axeRX->initialize();
   axeRY->initialize();
-  axeRZ->initialize();
-  axeX->initialize();
-  axeY->initialize();
-  throttle->initialize();
+  //axeRZ->initialize();
+  //axeX->initialize();
+  //axeY->initialize();
+  //throttle->initialize();
   
   //Initialize joystick report
-  //hidReport = new CHidReport();
   hidReport->initialize();
   
   //Initialize variables
@@ -102,22 +101,22 @@ void setup() {
 
 void InterruptTimer2() { // debut de la fonction d'interruption Timer2
   //Get button
-  buttonMatrix->getButtonStatus(buttonStatus);
+  //buttonMatrix->getButtonStatus(buttonStatus);
   //Extract control part
-  bool* pButton = buttonStatus;
-  memcpy(gameButtonStatus, pButton, sizeof(gameButtonStatus));
+  //bool* pButton = buttonStatus;
+  //memcpy(gameButtonStatus, pButton, sizeof(gameButtonStatus));
   //Extract game part
-  pButton = &buttonStatus[BUTTON_GAME_NB];
-  memcpy(controlButtonStatus, pButton, sizeof(controlButtonStatus));
+  //pButton = &buttonStatus[BUTTON_GAME_NB];
+  //memcpy(controlButtonStatus, pButton, sizeof(controlButtonStatus));
   
   //get analog
   switch(state) {
     case 0:  rx = axeRX->getMeasure(); state++; break;
     case 1:  ry = axeRY->getMeasure(); state++; break;
-    case 2:  rz = axeRZ->getMeasure(); state++; break;
-    case 3:  x = axeX->getMeasure(); state++; break;
-    case 4:  y = axeY->getMeasure(); state++; break;
-    case 5:  throttlePosition = throttle->getMeasure(); state = 0; break;
+    //case 2:  rz = axeRZ->getMeasure(); state++; break;
+    //case 3:  x = axeX->getMeasure(); state++; break;
+    //case 4:  y = axeY->getMeasure(); state++; break;
+    //case 5:  throttlePosition = throttle->getMeasure(); state = 0; break;
     default: state = 0; break;
   }
 }

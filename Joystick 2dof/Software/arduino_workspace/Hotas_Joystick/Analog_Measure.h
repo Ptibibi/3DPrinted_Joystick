@@ -32,6 +32,7 @@ class CAnalogMeasure {
     float coeffB;
     int inputRatioMin;
     int inputRatioMax;
+    int inputRatioNeutral;
     int outputRatioMin;
     int outputRatioMax;
     int lastValue;

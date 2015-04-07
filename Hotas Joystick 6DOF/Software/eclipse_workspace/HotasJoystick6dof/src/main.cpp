@@ -27,7 +27,6 @@
 #include "Config_Gpio.h"
 
 //Functional library
-#include "Display.h"
 #include "Button_Matrix.h"
 #include "Analog_Measure.h"
 #include "Analog_Dpad.h"
@@ -107,21 +106,17 @@ _gpioxConfig ov7670IO[] = {
 	{GPIOE, GPIO_PIN_6, GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF13_DCMI}, //d7
 };
 
-_gpioxConfig ssd1306IO[] = {
-};
-
 //Create common object
-CDisplay* display = new CDisplay();
-CButtonMatrix* buttonMatrix = new CButtonMatrix(rowMap, colMap, BUTTON_MATRIX_DELAY_UPDATE, display);
-CAnalogMeasure* throttleLeft = new CAnalogMeasure(analogInput[0], POSITION_ANALOG_THROTTLE_OUTPUT_MIN, POSITION_ANALOG_THROTTLE_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_THROTTLE_LEFT_ADDR_OFFSET, "Throttle Left", display);
-CAnalogMeasure* dPadLeftX = new CAnalogMeasure(analogInput[1], POSITION_ANALOG_DPAD_OUTPUT_MIN, POSITION_ANALOG_DPAD_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_PDAD_LEFT_X_ADDR_OFFSET, "Dpad left X", display);
-CAnalogMeasure* dPadLeftY = new CAnalogMeasure(analogInput[2], POSITION_ANALOG_DPAD_OUTPUT_MIN, POSITION_ANALOG_DPAD_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_PDAD_LEFT_Y_ADDR_OFFSET, "Dpad left Y", display);
-CAnalogMeasure* dPadRightX = new CAnalogMeasure(analogInput[3], POSITION_ANALOG_DPAD_OUTPUT_MIN, POSITION_ANALOG_DPAD_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_PDAD_RIGHT_X_ADDR_OFFSET, "Dpad right X", display);
-CAnalogMeasure* dPadRightY = new CAnalogMeasure(analogInput[4], POSITION_ANALOG_DPAD_OUTPUT_MIN, POSITION_ANALOG_DPAD_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_PDAD_RIGHT_Y_ADDR_OFFSET, "Dpad right Y", display);
-CAnalogDpad* dPadLeft = new CAnalogDpad(DPAD_NEUTRAL_ZONE, display);
-CAnalogDpad* dPadRight = new CAnalogDpad(DPAD_NEUTRAL_ZONE, display);
-//CTracking6Dof* tracking6Dof = new CTracking6Dof(ov7670Pin, display);
-//CHidReport* hidReport = new CHidReport(display);
+CButtonMatrix* buttonMatrix = new CButtonMatrix(rowMap, colMap);
+CAnalogMeasure* throttleLeft = new CAnalogMeasure(analogInput[0], POSITION_ANALOG_THROTTLE_OUTPUT_MIN, POSITION_ANALOG_THROTTLE_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_THROTTLE_LEFT_ADDR_OFFSET, "Throttle Left");
+CAnalogMeasure* dPadLeftX = new CAnalogMeasure(analogInput[1], POSITION_ANALOG_DPAD_OUTPUT_MIN, POSITION_ANALOG_DPAD_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_PDAD_LEFT_X_ADDR_OFFSET, "Dpad left X");
+CAnalogMeasure* dPadLeftY = new CAnalogMeasure(analogInput[2], POSITION_ANALOG_DPAD_OUTPUT_MIN, POSITION_ANALOG_DPAD_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_PDAD_LEFT_Y_ADDR_OFFSET, "Dpad left Y");
+CAnalogMeasure* dPadRightX = new CAnalogMeasure(analogInput[3], POSITION_ANALOG_DPAD_OUTPUT_MIN, POSITION_ANALOG_DPAD_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_PDAD_RIGHT_X_ADDR_OFFSET, "Dpad right X");
+CAnalogMeasure* dPadRightY = new CAnalogMeasure(analogInput[4], POSITION_ANALOG_DPAD_OUTPUT_MIN, POSITION_ANALOG_DPAD_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_PDAD_RIGHT_Y_ADDR_OFFSET, "Dpad right Y");
+CAnalogDpad* dPadLeft = new CAnalogDpad(DPAD_NEUTRAL_ZONE);
+CAnalogDpad* dPadRight = new CAnalogDpad(DPAD_NEUTRAL_ZONE);
+//CTracking6Dof* tracking6Dof = new CTracking6Dof(ov7670Pin);
+//CHidReport* hidReport = new CHidReport();
 
 int
 main(int argc, char* argv[]) {
@@ -138,37 +133,13 @@ main(int argc, char* argv[]) {
 	Timer timer;
 	timer.start();
 
-	//Initialize screen
-	display->initialize();
-	display->print("...INIT...");
-	timer.sleep(500);
-
 	//Initialize button matrix
-	display->print("...BUTTON MATRIX...");
+	trace_printf("...BUTTON MATRIX...\n");
 	timer.sleep(500);
 	buttonMatrix->initialize();
 
-
-	/*BlinkLed blinkLed;
-	// Perform all necessary initialisations for the LED.
-	blinkLed.powerUp();
-	setConfigGPIO(colMap[5]);
-	_gpioxConfig other[] = {
-	{GPIOA, GPIO_PIN_0, GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF0_MCO},
-	};
-	setConfigGPIO(other[0]);
-
-	while(1) {
-	blinkLed.turnOn();
-	timer.sleep(500);
-
-	blinkLed.turnOff();
-	HAL_GPIO_WritePin(colMap[5].gpiox, colMap[5].Pin, HAL_GPIO_ReadPin(other[0].gpiox, other[0].Pin));
-	timer.sleep(500);
-	}*/
-
 	//Initialize analog input
-	display->print("...ANALOG INPUT...");
+	trace_printf("...ANALOG INPUT...\n");
 	timer.sleep(500);
 	throttleLeft->initialize();
 	dPadLeftX->initialize();
@@ -177,18 +148,23 @@ main(int argc, char* argv[]) {
 	dPadRightY->initialize();
 
 	//Initialize analog Dpad
-	display->print("...ANALOG DPAD...");
+	trace_printf("...ANALOG DPAD...\n");
 	timer.sleep(500);
 	dPadLeft->initialize();
 	dPadRight->initialize();
 
+	//Initialize Tracking 6Dof
+	trace_printf("...TRACKING 6DOF...\n");
+	timer.sleep(500);
+	//tracking6Dof->initialize();
+
 	//Initialize joystick report
-	display->print("...REPORT...");
+	trace_printf("...REPORT...\n");
 	timer.sleep(500);
 	//hidReport->initialize();
 
 	//Initialize variables
-	display->print("...VARIABLES...");
+	trace_printf("...VARIABLES...\n");
 	timer.sleep(500);
 	memset(buttonStatus, GPIO_PIN_RESET, sizeof(buttonStatus));
 	memset(gameButtonStatus, GPIO_PIN_RESET, sizeof(gameButtonStatus));
@@ -209,21 +185,21 @@ main(int argc, char* argv[]) {
 	surging = 0;
 
 	//Enable inter
-	display->print("...INTER...");
+	trace_printf("...INTER...\n");
 	//MsTimer2::set(5, InterruptTimer2); // période 1000ms
 	//MsTimer2::start(); // active Timer 2
 	timer.sleep(500);
 
 	// Infinite loop
 	while (1) {
-		//Get 6DOF
-		//tracking6Dof->getPosition(&yaw, &pitch, &roll, &heaving, &swaying, &surging);
+	  //Get 6DOF
+	  //tracking6Dof->getPosition(&yaw, &pitch, &roll, &heaving, &swaying, &surging);
 
-		//Set HID report
-		//hidReport->sendReport(gameButtonStatus, yaw, pitch, roll, swaying, surging, heaving, throttleLeftPosition, throttleRightPosition, dPadLeftStatus, dPadRightStatus);
-		//display->print("%d %d %d\n%d %d %d\n%d %d\n%d %d", yaw, pitch, roll, swaying, surging, heaving, throttleLeftPosition, throttleRightPosition, dPadLeftStatus, dPadRightStatus);
+	  //Set HID report
+	  //hidReport->sendReport(gameButtonStatus, yaw, pitch, roll, swaying, surging, heaving, throttleLeftPosition, throttleRightPosition, dPadLeftStatus, dPadRightStatus);
+	  trace_printf("%d %d %d\t%d %d %d\t%d %d\t%d %d\n", yaw, pitch, roll, swaying, surging, heaving, throttleLeftPosition, throttleRightPosition, dPadLeftStatus, dPadRightStatus);
 
-		timer.sleep(50);
+	  timer.sleep(50);
 	}
 }
 

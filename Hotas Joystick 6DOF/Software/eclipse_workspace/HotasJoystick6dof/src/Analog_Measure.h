@@ -6,10 +6,13 @@
 #endif
 
 #include "stdint.h"
+#include "diag/Trace.h"
 
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_hal_adc.h"
 #include "stm32f4xx_hal_sram.h"
+
+#include "Timer.h"
 
 //Common files
 #include "Config_Joystick_6Dof.h"
@@ -19,12 +22,11 @@
 #include "Config_Gpio.h"
 
 //Functional library
-#include "Display.h"
 
 class CAnalogMeasure {
   //Method
   public:
-    CAnalogMeasure(_gpioxConfig conf, int16_t outputMin, int16_t outputMax, uint32_t storageAddr, const char* name, CDisplay* pDisp);
+    CAnalogMeasure(_gpioxConfig conf, int16_t outputMin, int16_t outputMax, uint32_t storageAddr, const char* name);
     ~CAnalogMeasure();
     void setCalibration();
     void initialize();
@@ -39,8 +41,7 @@ class CAnalogMeasure {
   
   //Variables
   private:
-    CDisplay* display;
-    
+    Timer timer;
     _gpioxConfig config;
     uint32_t storageAddrMeasure;
     const char* nameMeasure;

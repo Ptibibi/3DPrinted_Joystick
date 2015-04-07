@@ -7,25 +7,24 @@
 
 #include "stdint.h"
 #include "math.h"
+#include "diag/Trace.h"
+
+#include "Timer.h"
 
 #include "Config_Joystick_6Dof.h"
 #include "Typedef_Joystick_6Dof.h"
 
-#include "Display.h"
-
 class CAnalogDpad {
   //Method
   public:
-    CAnalogDpad();
-    CAnalogDpad(int16_t neutralZone, CDisplay* pDisp);
+    CAnalogDpad(int16_t neutralZone);
     ~CAnalogDpad();
     void initialize();
     int16_t getDPadStatus(int16_t posX, int16_t posY);
     
   //Variables
   private:
-    CDisplay* display;
-    
+    Timer timer;
     int16_t neutral;
 };
 
