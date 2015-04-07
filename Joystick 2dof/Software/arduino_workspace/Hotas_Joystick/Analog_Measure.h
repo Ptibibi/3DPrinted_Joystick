@@ -9,7 +9,6 @@
 class CAnalogMeasure {
   //Method
   public:
-    CAnalogMeasure();
     CAnalogMeasure(int pinNumber, int outputMin, int outputMax, int storageAddr, const char* name);
     ~CAnalogMeasure();
     void setCalibration();

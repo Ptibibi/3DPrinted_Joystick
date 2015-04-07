@@ -26,6 +26,7 @@ class CAnalogMeasure {
   public:
     CAnalogMeasure(_gpioxConfig conf, int16_t outputMin, int16_t outputMax, uint32_t storageAddr, const char* name, CDisplay* pDisp);
     ~CAnalogMeasure();
+    void setCalibration();
     void initialize();
     int16_t getMeasure();
     
@@ -35,7 +36,6 @@ class CAnalogMeasure {
     int16_t getAnalogValue();
     int16_t applicCoeff(uint16_t value);
     void updateCoeff();
-    void setCalibration();
   
   //Variables
   private:

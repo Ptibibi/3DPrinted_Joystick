@@ -1,21 +1,19 @@
 #include "Analog_Measure.h"
 
-CAnalogMeasure::CAnalogMeasure() {
-}
-
 CAnalogMeasure::CAnalogMeasure(int pinNumber, int outputMin, int outputMax, int storageAddr, const char* name) {
   pin = pinNumber;
   outputRatioMin = outputMin;
   outputRatioMax = outputMax;
   storageAddrMeasure = storageAddr;
   nameMeasure = name;
+  
+  pinMode(pin, INPUT);
 }
 
 CAnalogMeasure::~CAnalogMeasure() {
 }
 
 void CAnalogMeasure::initialize() {
-  pinMode(pin, INPUT);
   initCoeff();
   updateCoeff();
 }

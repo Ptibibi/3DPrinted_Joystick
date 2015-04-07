@@ -7,7 +7,6 @@
 class CButtonMatrix {
   //Method
   public:
-    CButtonMatrix();
     CButtonMatrix(byte* pRowMap, byte* pColMap);
     ~CButtonMatrix();
     void initialize();

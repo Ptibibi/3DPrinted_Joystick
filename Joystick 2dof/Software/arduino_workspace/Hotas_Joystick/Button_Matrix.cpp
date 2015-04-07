@@ -1,8 +1,5 @@
 #include "Button_Matrix.h"
 
-CButtonMatrix::CButtonMatrix() {
-}
-
 CButtonMatrix::CButtonMatrix(byte* pRowMap, byte* pColMap) {
   memcpy(rowMap, pRowMap, sizeof(byte) * BUTTON_MATRIX_NB_ROWS);
   memcpy(colMap, pColMap, sizeof(byte) * BUTTON_MATRIX_NB_COLS);

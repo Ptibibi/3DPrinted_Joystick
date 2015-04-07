@@ -19,7 +19,6 @@ CAnalogMeasure::~CAnalogMeasure() {
 }
 
 void CAnalogMeasure::initialize() {
-  //pinMode(pin, INPUT);
   setConfigGPIO(config);
   //and analogconfig
   initCoeff();
@@ -59,13 +58,12 @@ int16_t CAnalogMeasure::getAnalogValue() {
 }
 
 int16_t CAnalogMeasure::applicCoeff(uint16_t value) {
-  float val = value;
-  int pos = (int)(coeffA * val + coeffB);
-  if (outputRatioMin > pos)
-    pos = outputRatioMin;
-  else if (pos > outputRatioMax)
-    pos = outputRatioMax;
-  return pos;
+	float pos = coeffA * (float)value + coeffB;
+	if (outputRatioMin > pos)
+	  pos = outputRatioMin;
+	else if (pos > outputRatioMax)
+	  pos = outputRatioMax;
+	return (int16_t)pos;
 }
 
 int16_t CAnalogMeasure::getMeasure() {

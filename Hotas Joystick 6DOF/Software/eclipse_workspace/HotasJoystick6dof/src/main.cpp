@@ -57,12 +57,11 @@
 GPIO_PinState buttonStatus[BUTTON_GAME_NB + BUTTON_CONTROL_NB];
 GPIO_PinState gameButtonStatus[BUTTON_GAME_NB];
 GPIO_PinState controlButtonStatus[BUTTON_CONTROL_NB];
-uint8_t dPadLeftStatus;
-uint8_t dPadRightStatus;
-uint16_t throttleLeftPosition;
-uint16_t throttleRightPosition;
+uint16_t padLeftX, padLeftY;
+uint16_t padRightX, padRightY;
+uint8_t dPadLeftStatus, dPadRightStatus;
+uint16_t throttleLeftPosition, throttleRightPosition;
 uint16_t yaw, pitch, roll, heaving, swaying, surging;
-uint16_t analogState;
 
 _gpioxConfig rowMap[] = {
 	{GPIOE, GPIO_PIN_8, GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF0_MCO},
@@ -112,9 +111,9 @@ _gpioxConfig ssd1306IO[] = {
 };
 
 //Create common object
-/*CDisplay* display = new CDisplay();
-//CButtonMatrix* buttonMatrix = new CButtonMatrix(rowMap, colMap, BUTTON_MATRIX_DELAY_UPDATE, display);
-CAnalogMeasure* throttleLeft = new CAnalogMeasure(analogInput[0], POSITION_ANALOG_THROTTLE_OUTPUT_MIN, POSITION_ANALOG_THROTTLE_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_THROTTLE_LEFT_ADDR_OFFSET, "Throttle", display);
+CDisplay* display = new CDisplay();
+CButtonMatrix* buttonMatrix = new CButtonMatrix(rowMap, colMap, BUTTON_MATRIX_DELAY_UPDATE, display);
+CAnalogMeasure* throttleLeft = new CAnalogMeasure(analogInput[0], POSITION_ANALOG_THROTTLE_OUTPUT_MIN, POSITION_ANALOG_THROTTLE_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_THROTTLE_LEFT_ADDR_OFFSET, "Throttle Left", display);
 CAnalogMeasure* dPadLeftX = new CAnalogMeasure(analogInput[1], POSITION_ANALOG_DPAD_OUTPUT_MIN, POSITION_ANALOG_DPAD_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_PDAD_LEFT_X_ADDR_OFFSET, "Dpad left X", display);
 CAnalogMeasure* dPadLeftY = new CAnalogMeasure(analogInput[2], POSITION_ANALOG_DPAD_OUTPUT_MIN, POSITION_ANALOG_DPAD_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_PDAD_LEFT_Y_ADDR_OFFSET, "Dpad left Y", display);
 CAnalogMeasure* dPadRightX = new CAnalogMeasure(analogInput[3], POSITION_ANALOG_DPAD_OUTPUT_MIN, POSITION_ANALOG_DPAD_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_PDAD_RIGHT_X_ADDR_OFFSET, "Dpad right X", display);
@@ -123,167 +122,133 @@ CAnalogDpad* dPadLeft = new CAnalogDpad(DPAD_NEUTRAL_ZONE, display);
 CAnalogDpad* dPadRight = new CAnalogDpad(DPAD_NEUTRAL_ZONE, display);
 //CTracking6Dof* tracking6Dof = new CTracking6Dof(ov7670Pin, display);
 //CHidReport* hidReport = new CHidReport(display);
-*/
+
 int
 main(int argc, char* argv[]) {
-  // Send a greeting to the trace device (skipped on Release).
-  trace_puts("Hello ARM World!");
+	// Send a greeting to the trace device (skipped on Release).
+	trace_puts("Hello ARM World!");
+	// At this stage the system clock should have already been configured
+	// at high speed.
+	trace_printf("System clock: %uHz\n", SystemCoreClock);
 
-  // At this stage the system clock should have already been configured
-  // at high speed.
-  trace_printf("System clock: %uHz\n", SystemCoreClock);
-  SystemInit();
-  SystemCoreClockUpdate();
-  HAL_Init();
+	SystemInit();
+	SystemCoreClockUpdate();
+	HAL_Init();
 
-  Timer timer;
-  timer.start();
+	Timer timer;
+	timer.start();
 
-  //Initialize screen
-  //display->initialize();
-  //display->print("...INIT...");
-  timer.sleep(500);
+	//Initialize screen
+	display->initialize();
+	display->print("...INIT...");
+	timer.sleep(500);
 
-  //Initialize button matrix
-  //display->print("...BUTTON MATRIX...");
-  timer.sleep(500);
-  //buttonMatrix->initialize();
+	//Initialize button matrix
+	display->print("...BUTTON MATRIX...");
+	timer.sleep(500);
+	buttonMatrix->initialize();
 
 
-  BlinkLed blinkLed;
-  // Perform all necessary initialisations for the LED.
-  blinkLed.powerUp();
-  setConfigGPIO(colMap[5]);
-  _gpioxConfig other[] = {
-      {GPIOA, GPIO_PIN_0, GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF0_MCO},
-  };
-  setConfigGPIO(other[0]);
+	/*BlinkLed blinkLed;
+	// Perform all necessary initialisations for the LED.
+	blinkLed.powerUp();
+	setConfigGPIO(colMap[5]);
+	_gpioxConfig other[] = {
+	{GPIOA, GPIO_PIN_0, GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF0_MCO},
+	};
+	setConfigGPIO(other[0]);
 
-  while(1) {
-    blinkLed.turnOn();
-    timer.sleep(500);
+	while(1) {
+	blinkLed.turnOn();
+	timer.sleep(500);
 
-    blinkLed.turnOff();
-    HAL_GPIO_WritePin(colMap[5].gpiox, colMap[5].Pin, HAL_GPIO_ReadPin(other[0].gpiox, other[0].Pin));
-    timer.sleep(500);
-  }
+	blinkLed.turnOff();
+	HAL_GPIO_WritePin(colMap[5].gpiox, colMap[5].Pin, HAL_GPIO_ReadPin(other[0].gpiox, other[0].Pin));
+	timer.sleep(500);
+	}*/
 
-  //Initialize analog input
-  /*display->print("...ANALOG INPUT...");
-  delay(500);
-  throttle->initialize();
-  dPadX->initialize();
-  dPadY->initialize();
-  axeX->initialize();
-  axeY->initialize();
-  axeZ->initialize();
-  axeRX->initialize();
-  axeRY->initialize();
+	//Initialize analog input
+	display->print("...ANALOG INPUT...");
+	timer.sleep(500);
+	throttleLeft->initialize();
+	dPadLeftX->initialize();
+	dPadLeftY->initialize();
+	dPadRightX->initialize();
+	dPadRightY->initialize();
 
-  //Initialize analog Dpad
-  display->print("...ANALOG DPAD...");
-  delay(500);
-  dPad->initialize();
+	//Initialize analog Dpad
+	display->print("...ANALOG DPAD...");
+	timer.sleep(500);
+	dPadLeft->initialize();
+	dPadRight->initialize();
 
-  //Initialize joystick report
-  display->print("...REPORT...");
-  delay(500);
-  hidReport->initialize();
+	//Initialize joystick report
+	display->print("...REPORT...");
+	timer.sleep(500);
+	//hidReport->initialize();
 
-  //Initialize variables
-  display->print("...VARIABLES...");
-  delay(500);
-  memset(gameButtonStatus, false, sizeof(gameButtonStatus));
-  memset(controlButtonStatus, false, sizeof(controlButtonStatus));
-  x = 0;
-  y = 0;
-  z = 0;
-  rX = 0;
-  rY = 0;
-  throttlePosition = 0;
-  dPadStatus = HOTAS_DPAD_CENTERED;
-  padX = 0;
-  padY = 0;*/
-  analogState = 0;
+	//Initialize variables
+	display->print("...VARIABLES...");
+	timer.sleep(500);
+	memset(buttonStatus, GPIO_PIN_RESET, sizeof(buttonStatus));
+	memset(gameButtonStatus, GPIO_PIN_RESET, sizeof(gameButtonStatus));
+	memset(controlButtonStatus, GPIO_PIN_RESET, sizeof(controlButtonStatus));
+	padLeftX = 0;
+	padLeftY = 0;
+	padRightX = 0;
+	padRightY = 0;
+	dPadLeftStatus = 0;
+	dPadRightStatus = 0;
+	throttleLeftPosition = 0;
+	throttleRightPosition = 0;
+	yaw = 0;
+	pitch = 0;
+	roll = 0;
+	heaving = 0;
+	swaying = 0;
+	surging = 0;
 
-  //Enable inter
-  //display->print("...INTER...");
-  //MsTimer2::set(5, InterruptTimer2); // période 1000ms
-  //MsTimer2::start(); // active Timer 2
-  timer.sleep(500);
+	//Enable inter
+	display->print("...INTER...");
+	//MsTimer2::set(5, InterruptTimer2); // période 1000ms
+	//MsTimer2::start(); // active Timer 2
+	timer.sleep(500);
 
-  // Infinite loop
-  while (1) {
-    //Get 6DOF
-    //tracking6Dof->getPosition(&yaw, &pitch, &roll, &heaving, &swaying, &surging);
+	// Infinite loop
+	while (1) {
+		//Get 6DOF
+		//tracking6Dof->getPosition(&yaw, &pitch, &roll, &heaving, &swaying, &surging);
 
-    //Get throttle position
-   // throttleLeftPosition = throttleLeft->getMeasure();
+		//Set HID report
+		//hidReport->sendReport(gameButtonStatus, yaw, pitch, roll, swaying, surging, heaving, throttleLeftPosition, throttleRightPosition, dPadLeftStatus, dPadRightStatus);
+		//display->print("%d %d %d\n%d %d %d\n%d %d\n%d %d", yaw, pitch, roll, swaying, surging, heaving, throttleLeftPosition, throttleRightPosition, dPadLeftStatus, dPadRightStatus);
 
-    //Get DPAD status
-    //dPadLeftStatus = dPadLeft->getDPadStatus(dPadLeftX->getMeasure(), dPadLeftY->getMeasure());
-    //dPadRightStatus = dPadRight->getDPadStatus(dPadRightX->getMeasure(), dPadRightY->getMeasure());
-
-    /*static int count = 0;
-    if (gameButtonStatus[count] == GPIO_PIN_SET)
-      gameButtonStatus[count] = GPIO_PIN_RESET;
-    else
-      gameButtonStatus[count] = GPIO_PIN_SET;
-    if (count < BUTTON_GAME_NB - 1)
-      count++;
-    else
-      count = 0;*/
-
-    /*yaw = (int)random(-32768, 32767);
-    pitch = (int)random(-32768, 32767);
-    roll = (int)random(-32768, 32767);
-    swaying = (int)random(-32768, 32767);
-    surging = (int)random(-32768, 32767);
-    heaving = (int)random(-32768, 32767);
-    throttleLeftPosition = (int)random(-32768, 32767);
-    throttleRightPosition = (int)random(-32768, 32767);*/
-
-    /*if (dPadLeftStatus < 8)
-      dPadLeftStatus++;
-    else
-      dPadLeftStatus = 0;
-
-    if (dPadRightStatus < 8)
-      dPadRightStatus++;
-    else
-      dPadRightStatus = 0;*/
-
-    //Set HID report
-    //hidReport->sendReport(gameButtonStatus, yaw, pitch, roll, swaying, surging, heaving, throttleLeftPosition, throttleRightPosition, dPadLeftStatus, dPadRightStatus);
-    //display->print("%d %d %d\n%d %d %d\n%d %d\n%d %d", yaw, pitch, roll, swaying, surging, heaving, throttleLeftPosition, throttleRightPosition, dPadLeftStatus, dPadRightStatus);
-
-    timer.sleep(50);
-  }
+		timer.sleep(50);
+	}
 }
 
 
 void InterruptTimer2() { // debut de la fonction d'interruption Timer2
-  //Get button
-  //buttonMatrix->getButtonStatus(buttonStatus);
-  //Extract control part
-  //bool* pButton = buttonStatus;
-  //memcpy(gameButtonStatus, pButton, sizeof(gameButtonStatus));
-  //Extract game part
-  //pButton = &buttonStatus[BUTTON_GAME_NB];
-  //memcpy(controlButtonStatus, pButton, sizeof(controlButtonStatus));
+	//Get button
+	buttonMatrix->getButtonStatus(buttonStatus);
+	//Extract control part
+	GPIO_PinState* pButton = buttonStatus;
+	memcpy(gameButtonStatus, pButton, sizeof(gameButtonStatus));
+	//Extract game part
+	pButton = &buttonStatus[BUTTON_GAME_NB];
+	memcpy(controlButtonStatus, pButton, sizeof(controlButtonStatus));
 
-  //get analog
-  /*switch(analogState) {
-    case 0:  throttleLeftPositionPosition = throttleLeft->getMeasure(); analogState++; break;
-    case 1:  padX = dPadX->getMeasure(); analogState++; break;
-    case 2:  padY = dPadY->getMeasure(); analogState++; break;//dPadStatus = dPad->getDPadStatus(padX, padY); break;
-    case 3:  x = axeX->getMeasure(); analogState++; break;
-    case 4:  y = axeY->getMeasure(); analogState++; break;
-    case 5:  z = axeZ->getMeasure(); analogState++; break;
-    case 6:  rX = axeRX->getMeasure(); analogState++; break;
-    case 7:  rY = axeRY->getMeasure(); analogState = 0; break;
-    default: analogState = 0; break;
-  }*/
+	//get analog
+
+	static uint16_t interState = 0;
+	switch(interState) {
+		case 0:  throttleLeftPosition = throttleLeft->getMeasure(); interState++; break;
+		case 1:  padLeftX = dPadLeftX->getMeasure(); interState++; break;
+		case 2:  padLeftY = dPadLeftY->getMeasure(); interState++; dPadLeftStatus = dPadLeft->getDPadStatus(padLeftX, padLeftY); break;
+		case 3:  padRightX = dPadRightX->getMeasure(); interState++; break;
+		case 4:  padRightY = dPadRightY->getMeasure(); interState = 0; dPadRightStatus = dPadRight->getDPadStatus(padRightX, padRightY); break;
+		default: interState = 0; break;
+	}
 }
 
 #pragma GCC diagnostic pop
