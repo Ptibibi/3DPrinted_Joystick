@@ -13,17 +13,16 @@ class CButtonMatrix {
     void getButtonStatus(bool* pButtonStatus);
     
   private:
-    void setMatrix(int stateCol);
-    bool bitRightShiftAndMask(int bitmap, int shift, int mask);
-    void nextButtonMatrixState();
     void updateButtonStatus();
+    void updateMatrixStatus();
+    void setMatrix(int stateMatrix);
   
   //Variables
   private:
     byte rowMap[BUTTON_MATRIX_NB_ROWS];
     byte colMap[BUTTON_MATRIX_NB_COLS];
     bool buttonStatus[BUTTON_MATRIX_NB];
-    int stateCol;
+    int stateMatrix;
     
 };
 

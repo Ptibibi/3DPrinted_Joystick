@@ -24,7 +24,7 @@
 #include "Typedef_Joystick_6dof.h"
 
 //Hardware library
-#include "Config_Gpio.h"
+#include "Config_Stm32F4.h"
 
 //Functional library
 #include "Button_Matrix.h"
@@ -53,41 +53,46 @@
 #pragma GCC diagnostic ignored "-Wmissing-declarations"
 #pragma GCC diagnostic ignored "-Wreturn-type"
 
-GPIO_PinState buttonStatus[BUTTON_GAME_NB + BUTTON_CONTROL_NB];
-GPIO_PinState gameButtonStatus[BUTTON_GAME_NB];
-GPIO_PinState controlButtonStatus[BUTTON_CONTROL_NB];
+GPIO_PinState buttonStatus[BUTTON_MATRIX_NB];
 uint16_t padLeftX, padLeftY;
 uint16_t padRightX, padRightY;
 uint8_t dPadLeftStatus, dPadRightStatus;
 uint16_t throttleLeftPosition, throttleRightPosition;
 uint16_t yaw, pitch, roll, heaving, swaying, surging;
-
-_gpioxConfig rowMap[] = {
-	{GPIOE, GPIO_PIN_8, GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF0_MCO},
-	{GPIOE, GPIO_PIN_9, GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF0_MCO},
-	{GPIOE, GPIO_PIN_10, GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF0_MCO},
-	{GPIOE, GPIO_PIN_11, GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF0_MCO},
-	{GPIOE, GPIO_PIN_12, GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF0_MCO},
-	{GPIOE, GPIO_PIN_13, GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF0_MCO},
-	{GPIOE, GPIO_PIN_14, GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF0_MCO},
-	{GPIOE, GPIO_PIN_15, GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF0_MCO}
-};
+uint16_t i;
 
 _gpioxConfig colMap[] = {
-	{GPIOD, GPIO_PIN_8, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF0_MCO},
-	{GPIOD, GPIO_PIN_9, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF0_MCO},
-	{GPIOD, GPIO_PIN_10, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF0_MCO},
-	{GPIOD, GPIO_PIN_11, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF0_MCO},
-	{GPIOD, GPIO_PIN_12, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF0_MCO},
-	{GPIOD, GPIO_PIN_13, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF0_MCO}
+	{GPIOE, {GPIO_PIN_8, GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF0_MCO}},
+	{GPIOE, {GPIO_PIN_9, GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF0_MCO}},
+	{GPIOE, {GPIO_PIN_10, GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF0_MCO}},
+	{GPIOE, {GPIO_PIN_11, GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF0_MCO}},
+	{GPIOE, {GPIO_PIN_12, GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF0_MCO}},
+	{GPIOE, {GPIO_PIN_13, GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF0_MCO}},
+	{GPIOE, {GPIO_PIN_14, GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF0_MCO}},
+	{GPIOE, {GPIO_PIN_15, GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF0_MCO}},
 };
 
-_gpioxConfig analogInput[] = {
-	{GPIOA, GPIO_PIN_1, GPIO_MODE_ANALOG, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF9_CAN1}, //dpad1x
-	{GPIOA, GPIO_PIN_2, GPIO_MODE_ANALOG, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF9_CAN1}, //dpad1y
-	{GPIOA, GPIO_PIN_3, GPIO_MODE_ANALOG, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF9_CAN1}, //dpad2x
-	{GPIOB, GPIO_PIN_0, GPIO_MODE_ANALOG, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF9_CAN1}, //dpad2y
-	{GPIOB, GPIO_PIN_1, GPIO_MODE_ANALOG, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF9_CAN1}, //throttle
+_gpioxConfig rowMap[] = {
+	{GPIOD, {GPIO_PIN_8, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF0_MCO}},
+	{GPIOD, {GPIO_PIN_9, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF0_MCO}},
+	{GPIOD, {GPIO_PIN_10, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF0_MCO}},
+	{GPIOD, {GPIO_PIN_11, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF0_MCO}},
+	{GPIOD, {GPIO_PIN_12, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF0_MCO}},
+	{GPIOD, {GPIO_PIN_13, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF0_MCO}},
+};
+
+_gpioxConfig analogMap[] = {
+	{GPIOA, {GPIO_PIN_1, GPIO_MODE_ANALOG, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF9_CAN1}},
+	{GPIOA, {GPIO_PIN_2, GPIO_MODE_ANALOG, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF9_CAN1}},
+	{GPIOA, {GPIO_PIN_3, GPIO_MODE_ANALOG, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF9_CAN1}},
+	{GPIOB, {GPIO_PIN_4, GPIO_MODE_ANALOG, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF9_CAN1}},
+	{GPIOB, {GPIO_PIN_5, GPIO_MODE_ANALOG, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF9_CAN1}},
+};
+ADC_HandleTypeDef ADC_HandleDef[] = {
+//	ADC1, {ADC_CLOCKPRESCALER_PCLK_DIV8, ADC_RESOLUTION12b, ADC_DATAALIGN_RIGHT, ENABLE, EOC_SEQ_CONV, ENABLE, ENABLE, 1, DISABLE, 8, ADC_EXTERNALTRIGCONVEDGE_NONE, ADC_EXTERNALTRIGCONV_T1_CC1}
+};
+ADC_ChannelConfTypeDef ADC_ChannelConfDef[] = {
+	ADC_CHANNEL_0, 1, ADC_SAMPLETIME_3CYCLES, 0
 };
 
 _gpioxConfig ov7670IO[] = {
@@ -108,11 +113,11 @@ _gpioxConfig ov7670IO[] = {
 
 //Create common object
 CButtonMatrix* buttonMatrix = new CButtonMatrix(rowMap, colMap);
-CAnalogMeasure* throttleLeft = new CAnalogMeasure(analogInput[0], POSITION_ANALOG_THROTTLE_OUTPUT_MIN, POSITION_ANALOG_THROTTLE_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_THROTTLE_LEFT_ADDR_OFFSET, "Throttle Left");
-CAnalogMeasure* dPadLeftX = new CAnalogMeasure(analogInput[1], POSITION_ANALOG_DPAD_OUTPUT_MIN, POSITION_ANALOG_DPAD_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_PDAD_LEFT_X_ADDR_OFFSET, "Dpad left X");
-CAnalogMeasure* dPadLeftY = new CAnalogMeasure(analogInput[2], POSITION_ANALOG_DPAD_OUTPUT_MIN, POSITION_ANALOG_DPAD_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_PDAD_LEFT_Y_ADDR_OFFSET, "Dpad left Y");
-CAnalogMeasure* dPadRightX = new CAnalogMeasure(analogInput[3], POSITION_ANALOG_DPAD_OUTPUT_MIN, POSITION_ANALOG_DPAD_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_PDAD_RIGHT_X_ADDR_OFFSET, "Dpad right X");
-CAnalogMeasure* dPadRightY = new CAnalogMeasure(analogInput[4], POSITION_ANALOG_DPAD_OUTPUT_MIN, POSITION_ANALOG_DPAD_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_PDAD_RIGHT_Y_ADDR_OFFSET, "Dpad right Y");
+CAnalogMeasure* throttleLeft = new CAnalogMeasure(analogMap[0], ADC_HandleDef[0], ADC_ChannelConfDef[0], POSITION_ANALOG_THROTTLE_OUTPUT_MIN, POSITION_ANALOG_THROTTLE_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_THROTTLE_LEFT_ADDR_OFFSET, "Throttle Left");
+CAnalogMeasure* dPadLeftX = new CAnalogMeasure(analogMap[1], ADC_HandleDef[0], ADC_ChannelConfDef[0], POSITION_ANALOG_DPAD_OUTPUT_MIN, POSITION_ANALOG_DPAD_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_PDAD_LEFT_X_ADDR_OFFSET, "Dpad left X");
+CAnalogMeasure* dPadLeftY = new CAnalogMeasure(analogMap[2], ADC_HandleDef[0], ADC_ChannelConfDef[0], POSITION_ANALOG_DPAD_OUTPUT_MIN, POSITION_ANALOG_DPAD_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_PDAD_LEFT_Y_ADDR_OFFSET, "Dpad left Y");
+CAnalogMeasure* dPadRightX = new CAnalogMeasure(analogMap[3], ADC_HandleDef[0], ADC_ChannelConfDef[0], POSITION_ANALOG_DPAD_OUTPUT_MIN, POSITION_ANALOG_DPAD_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_PDAD_RIGHT_X_ADDR_OFFSET, "Dpad right X");
+CAnalogMeasure* dPadRightY = new CAnalogMeasure(analogMap[4], ADC_HandleDef[0], ADC_ChannelConfDef[0], POSITION_ANALOG_DPAD_OUTPUT_MIN, POSITION_ANALOG_DPAD_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_PDAD_RIGHT_Y_ADDR_OFFSET, "Dpad right Y");
 CAnalogDpad* dPadLeft = new CAnalogDpad(DPAD_NEUTRAL_ZONE);
 CAnalogDpad* dPadRight = new CAnalogDpad(DPAD_NEUTRAL_ZONE);
 //CTracking6Dof* tracking6Dof = new CTracking6Dof(ov7670Pin);
@@ -120,6 +125,8 @@ CAnalogDpad* dPadRight = new CAnalogDpad(DPAD_NEUTRAL_ZONE);
 
 int
 main(int argc, char* argv[]) {
+	Date test;
+	test.day = 10;
 	// Send a greeting to the trace device (skipped on Release).
 	trace_puts("Hello ARM World!");
 	// At this stage the system clock should have already been configured
@@ -166,9 +173,8 @@ main(int argc, char* argv[]) {
 	//Initialize variables
 	trace_printf("...VARIABLES...\n");
 	timer.sleep(500);
-	memset(buttonStatus, GPIO_PIN_RESET, sizeof(buttonStatus));
-	memset(gameButtonStatus, GPIO_PIN_RESET, sizeof(gameButtonStatus));
-	memset(controlButtonStatus, GPIO_PIN_RESET, sizeof(controlButtonStatus));
+	for (i = 0; i < BUTTON_MATRIX_NB; i++)
+		buttonStatus[i] = GPIO_PIN_RESET;
 	padLeftX = 0;
 	padLeftY = 0;
 	padRightX = 0;
@@ -196,7 +202,7 @@ main(int argc, char* argv[]) {
 	  //tracking6Dof->getPosition(&yaw, &pitch, &roll, &heaving, &swaying, &surging);
 
 	  //Set HID report
-	  //hidReport->sendReport(gameButtonStatus, yaw, pitch, roll, swaying, surging, heaving, throttleLeftPosition, throttleRightPosition, dPadLeftStatus, dPadRightStatus);
+	  //hidReport->sendReport(buttonStatus, yaw, pitch, roll, swaying, surging, heaving, throttleLeftPosition, throttleRightPosition, dPadLeftStatus, dPadRightStatus);
 	  trace_printf("%d %d %d\t%d %d %d\t%d %d\t%d %d\n", yaw, pitch, roll, swaying, surging, heaving, throttleLeftPosition, throttleRightPosition, dPadLeftStatus, dPadRightStatus);
 
 	  timer.sleep(50);
@@ -207,15 +213,8 @@ main(int argc, char* argv[]) {
 void InterruptTimer2() { // debut de la fonction d'interruption Timer2
 	//Get button
 	buttonMatrix->getButtonStatus(buttonStatus);
-	//Extract control part
-	GPIO_PinState* pButton = buttonStatus;
-	memcpy(gameButtonStatus, pButton, sizeof(gameButtonStatus));
-	//Extract game part
-	pButton = &buttonStatus[BUTTON_GAME_NB];
-	memcpy(controlButtonStatus, pButton, sizeof(controlButtonStatus));
 
 	//get analog
-
 	static uint16_t interState = 0;
 	switch(interState) {
 		case 0:  throttleLeftPosition = throttleLeft->getMeasure(); interState++; break;

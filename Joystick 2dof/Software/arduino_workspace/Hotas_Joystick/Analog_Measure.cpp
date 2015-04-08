@@ -6,6 +6,10 @@ CAnalogMeasure::CAnalogMeasure(int pinNumber, int outputMin, int outputMax, int 
   outputRatioMax = outputMax;
   storageAddrMeasure = storageAddr;
   nameMeasure = name;
+  coeffAPart1 = 0;
+  coeffBPart1 = 0;
+  coeffAPart2 = 0;
+  coeffBPart2 = 0;
   
   pinMode(pin, INPUT);
 }
@@ -51,10 +55,20 @@ void CAnalogMeasure::saveCoeff() {
 void CAnalogMeasure::updateCoeff() {
   float inMin = (float)inputRatioMin;
   float inMax = (float)inputRatioMax;
+  float inMiddle = (inMax - inMin) / 2 + inMin;
+  float inMiddlePart1 = inMiddle + inputRatioNeutral;
+  float inMiddlePart2 = inMiddle - inputRatioNeutral;
   float outMin = (float)outputRatioMin;
   float outMax = (float)outputRatioMax;
-  coeffA = (outMax - outMin) / (inMax - inMin);
-  coeffB = ((inMax * outMin) - (inMin * outMax)) / (inMax - inMin);
+  float outMiddle = (outMax - outMin) / 2 + outMin;
+
+  //coeffA = (outMax - outMin) / (inMax - inMin);
+  //coeffB = ((inMax * outMin) - (inMin * outMax)) / (inMax - inMin);
+  coeffAPart1 = (outMax - outMiddle) / (inMax - inMiddlePart1);
+  coeffBPart1 = ((inMax * outMiddle) - (inMiddlePart1 * outMax)) / (inMax - inMiddlePart1);
+
+  coeffAPart2 = (outMiddle - outMin) / (inMiddlePart2 - inMin);
+  coeffBPart2 = ((inMiddlePart2 * outMin) - (inMin * outMiddle)) / (inMiddlePart2 - inMin);
 }
 
 int CAnalogMeasure::getAnalogValue() {
@@ -62,17 +76,31 @@ int CAnalogMeasure::getAnalogValue() {
 }
 
 int CAnalogMeasure::applicCoeff(int value) {
+  float inMin = (float)inputRatioMin;
+  float inMax = (float)inputRatioMax;
+  float inMiddle = (inMax - inMin) / 2 + inMin;
+  float inMiddlePart1 = inMiddle + inputRatioNeutral;
+  float inMiddlePart2 = inMiddle - inputRatioNeutral;
+  float outMin = (float)outputRatioMin;
+  float outMax = (float)outputRatioMax;
+  float outMiddle = (outMax - outMin) / 2 + outMin;
+
   float val = value;
-  float pos = coeffA * val + coeffB;
-  float middle = (outputRatioMax - outputRatioMin) / 2 + outputRatioMin;
-  //(32767 - -32768) / 2 + -32768
-  if (((middle - inputRatioNeutral) < pos) && (pos < (middle + inputRatioNeutral)))
-    pos = middle;
-  else if (outputRatioMin > pos)
-  //if (outputRatioMin > pos)
-    pos = outputRatioMin;
-  else if (pos > outputRatioMax)
-    pos = outputRatioMax;
+  float pos = 0;
+  
+  if (val > inMiddlePart1) {
+    pos = coeffAPart1 * val + coeffBPart1;
+    if (pos > outMax)
+      pos = outMax;
+  }
+  else if (inMiddlePart2 < val) {
+    pos = coeffAPart2 * val + coeffBPart2;
+    if (outMin > pos)
+      pos = outMin;
+  }
+  else
+    pos = outMiddle;
+  
   return (int)pos;
 }
 
@@ -83,6 +111,11 @@ int CAnalogMeasure::getMeasure() {
 void CAnalogMeasure::setCalibration() {
   Serial.print("CALIBRATION ");
   Serial.print(nameMeasure);
+  Serial.print(" Start!\n");
+  delay(5000);
+  
+  Serial.print("CALIBRATION ");
+  Serial.print(nameMeasure);
   Serial.print(" Set MAX!\n");
   delay(5000);
   int maxValue = getAnalogValue();
@@ -91,7 +124,7 @@ void CAnalogMeasure::setCalibration() {
   Serial.print(nameMeasure);
   Serial.print(" Release!\n");
   delay(5000);
-  int middleValue1 = getAnalogValue();
+  int maxReleaseValue = getAnalogValue();
   
   Serial.print("CALIBRATION ");
   Serial.print(nameMeasure);
@@ -103,15 +136,19 @@ void CAnalogMeasure::setCalibration() {
   Serial.print(nameMeasure);
   Serial.print(" Release!\n");
   delay(5000);
-  int middleValue2 = getAnalogValue();
+  int minReleaseValue = getAnalogValue();
   
   Serial.print("CALIBRATION ");
   Serial.print(nameMeasure);
   Serial.print(" Finished\n");
-  inputRatioNeutral = (int)(abs(middleValue1 - middleValue2) / 2);
-  inputRatioMax = maxValue;
-  inputRatioMin = minValue;
-  delay(2000);
+  int inMiddle = ((maxValue - minValue) / 2) + minValue;
+  if (abs(maxReleaseValue - inMiddle) > abs(minReleaseValue - inMiddle))
+    inputRatioNeutral = (int)abs(maxReleaseValue - inMiddle) + ANALOG_INPUT_NEUTRAL_OFFSET;
+  else
+    inputRatioNeutral = (int)abs(minReleaseValue - inMiddle) + ANALOG_INPUT_NEUTRAL_OFFSET;
+  inputRatioMax = (uint16_t)maxValue;
+  inputRatioMin = (uint16_t)minValue;
+  
   saveCoeff();
   updateCoeff();
   Serial.println(inputRatioMin);

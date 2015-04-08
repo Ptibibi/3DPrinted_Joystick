@@ -12,7 +12,7 @@ void CHidReport::initialize() {
 
 void CHidReport::sendReport(bool* pButton, int rx, int ry, int rz, int x, int y, int throttleValue, byte dPad1Status, byte dPad2Status) {
   int i;
-  for (i = 0; i < BUTTON_GAME_NB; i++)
+  for (i = 0; i < BUTTON_MATRIX_NB; i++)
   {
     if (*(pButton + i) == true)
       Hotas.press(i + 1);

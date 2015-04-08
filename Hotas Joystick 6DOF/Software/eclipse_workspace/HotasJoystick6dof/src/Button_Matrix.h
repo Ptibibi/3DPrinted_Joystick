@@ -21,7 +21,7 @@
 #include "Typedef_Joystick_6Dof.h"
 
 #include "Timer.h"
-#include "Config_Gpio.h"
+#include "Config_Stm32F4.h"
 
 class CButtonMatrix {
   //Method
@@ -32,9 +32,9 @@ class CButtonMatrix {
     void getButtonStatus(GPIO_PinState* pButtonStatus);
 
   private:
-    void setMatrix(uint16_t stateCol);
-    void nextButtonMatrixState();
     void updateButtonStatus();
+    void updateMatrixStatus();
+    void setMatrix(uint16_t stateMatrix);
 
   //Variables
   private:
@@ -42,7 +42,7 @@ class CButtonMatrix {
     _gpioxConfig rowMap[BUTTON_MATRIX_NB_ROWS];
     _gpioxConfig colMap[BUTTON_MATRIX_NB_COLS];
     GPIO_PinState buttonStatus[BUTTON_MATRIX_NB];
-    uint16_t stateCol;
+    uint16_t stateMatrix;
 
 };
 

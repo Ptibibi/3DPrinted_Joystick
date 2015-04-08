@@ -10,35 +10,48 @@
 #include "stm32f4xx_hal_rcc.h"
 #include "stm32f4xx_hal_gpio.h"
 
-typedef struct {
+struct _gpioxConfig {
+	/*_gpioxConfig()
+    {
+		gpiox = GPIOE;
+		initDef = {GPIO_PIN_8, GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF0_MCO};
+    }*/
 	GPIO_TypeDef* gpiox;
-	uint32_t Pin;
-	uint32_t Mode;
-	uint32_t Pull;
-	uint32_t Speed;
-	uint32_t Alternate;
-} _gpioxConfig;
+	GPIO_InitTypeDef initDef;
+};
+struct Date
+{
+    int day;
+    int month;
+    int year;
 
-typedef union {
+    Date()
+    {
+        day=0;
+        month=0;
+        year=0;
+    }
+};
+union rgb555_ {
 	uint8_t port;
 	struct {
 		uint8_t na1 : 1;
 		uint8_t R : 5;
 		uint8_t na2 : 2;
 	};
-} rgb555_;
+};
 
-typedef struct {
+struct ledTracking_{
 	uint16_t led[3][4];
 	bool newData;
-} ledTracking_;
+};
 
-typedef struct {
+struct coord_ {
 	uint16_t X;
 	uint16_t Y;
-} coord_;
+};
 
-typedef struct {
+struct ov7670Pin_ {
 	uint16_t siocPin;
 	uint16_t siodPin;
 	uint16_t xclkPin;
@@ -56,6 +69,6 @@ typedef struct {
 	uint16_t d6Pin;
 	uint16_t d7Pin;
 	uint16_t d8Pin;
-} ov7670Pin_;
+};
 
 #endif /* _TYPEDEF_JOYSTICK_6DOF_ */

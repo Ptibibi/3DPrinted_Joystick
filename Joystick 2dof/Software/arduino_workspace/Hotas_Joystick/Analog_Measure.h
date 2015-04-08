@@ -28,14 +28,15 @@ class CAnalogMeasure {
     int storageAddrMeasure;
     const char* nameMeasure;
     
-    float coeffA;
-    float coeffB;
+    float coeffAPart1;
+    float coeffBPart1;
+    float coeffAPart2;
+    float coeffBPart2;
     int inputRatioMin;
     int inputRatioMax;
     int inputRatioNeutral;
     int outputRatioMin;
     int outputRatioMax;
-    int lastValue;
 };
 
 #endif /* _ANALOG_MEASURE_ */

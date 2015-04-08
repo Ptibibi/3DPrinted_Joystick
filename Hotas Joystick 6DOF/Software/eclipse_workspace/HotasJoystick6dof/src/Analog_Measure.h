@@ -6,6 +6,7 @@
 #endif
 
 #include "stdint.h"
+#include "stdlib.h"
 #include "diag/Trace.h"
 
 #include "stm32f4xx_hal.h"
@@ -19,14 +20,14 @@
 #include "Typedef_Joystick_6Dof.h"
 
 //Hardware library
-#include "Config_Gpio.h"
+#include "Config_Stm32F4.h"
 
 //Functional library
 
 class CAnalogMeasure {
   //Method
   public:
-    CAnalogMeasure(_gpioxConfig conf, int16_t outputMin, int16_t outputMax, uint32_t storageAddr, const char* name);
+    CAnalogMeasure(_gpioxConfig gpioConfig, ADC_HandleTypeDef analogConfig, ADC_ChannelConfTypeDef ADC_ChannelConfDef, int16_t outputMin, int16_t outputMax, uint32_t storageAddr, const char* name);
     ~CAnalogMeasure();
     void setCalibration();
     void initialize();
@@ -35,24 +36,28 @@ class CAnalogMeasure {
   private:
     void initCoeff();
     void saveCoeff();
-    int16_t getAnalogValue();
-    int16_t applicCoeff(uint16_t value);
+    int32_t getAnalogValue();
+    int16_t applicCoeff(int32_t value);
     void updateCoeff();
   
   //Variables
   private:
     Timer timer;
-    _gpioxConfig config;
+    _gpioxConfig gpioConf;
+    ADC_HandleTypeDef adcHandle;
+    ADC_ChannelConfTypeDef adcChannelConf;
     uint32_t storageAddrMeasure;
     const char* nameMeasure;
     
-    float coeffA;
-    float coeffB;
+    float coeffAPart1;
+    float coeffBPart1;
+    float coeffAPart2;
+    float coeffBPart2;
     uint16_t inputRatioMin;
     uint16_t inputRatioMax;
+    uint16_t inputRatioNeutral;
     int16_t outputRatioMin;
     int16_t outputRatioMax;
-    int16_t lastValue;
 };
 
 #ifdef __cplusplus

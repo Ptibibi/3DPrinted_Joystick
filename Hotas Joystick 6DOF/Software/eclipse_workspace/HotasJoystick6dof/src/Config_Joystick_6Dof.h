@@ -23,24 +23,6 @@
 #define BUTTON_MATRIX_NB_ROWS 8
 #define BUTTON_MATRIX_NB_COLS 6
 #define BUTTON_MATRIX_NB BUTTON_MATRIX_NB_ROWS * BUTTON_MATRIX_NB_COLS
-/*#define BUTTON_MATRIX_ROWS_PIN_1 40
-#define BUTTON_MATRIX_ROWS_PIN_2 39
-#define BUTTON_MATRIX_ROWS_PIN_3 38
-#define BUTTON_MATRIX_ROWS_PIN_4 37
-#define BUTTON_MATRIX_ROWS_PIN_5 36
-#define BUTTON_MATRIX_ROWS_PIN_6 35
-#define BUTTON_MATRIX_ROWS_PIN_7 34
-#define BUTTON_MATRIX_ROWS_PIN_8 33
-
-#define BUTTON_MATRIX_OLS_PIN_1 32
-#define BUTTON_MATRIX_OLS_PIN_2 31
-#define BUTTON_MATRIX_OLS_PIN_3 30
-#define BUTTON_MATRIX_OLS_PIN_4 29
-#define BUTTON_MATRIX_OLS_PIN_5 28
-#define BUTTON_MATRIX_OLS_PIN_6 27*/
-
-#define BUTTON_GAME_NB 32
-#define BUTTON_CONTROL_NB 8
 
 
 ///////////////////////////////////   ANALOG INPUT    /////////////////////////////
@@ -51,6 +33,14 @@
 #define ANALOG_INPUT_PIN_DPAD_RIGHT_Y	4//A3
 #define ANALOG_INPUT_PIN_THROTTLE_LEFT	5//A4
 #define ANALOG_INPUT_PIN_THROTTLE_RIGHT	6//A5*/
+
+#define POSITION_ANALOG_THROTTLE_OUTPUT_MIN -32768
+#define POSITION_ANALOG_THROTTLE_OUTPUT_MAX 32767
+#define POSITION_ANALOG_AXE_OUTPUT_MIN -32768
+#define POSITION_ANALOG_AXE_OUTPUT_MAX 32767
+#define POSITION_ANALOG_DPAD_OUTPUT_MIN -100
+#define POSITION_ANALOG_DPAD_OUTPUT_MAX 100
+#define ANALOG_INPUT_NEUTRAL_OFFSET 0
 
 
 ///////////////////////////////////    ANALOG DPAD    /////////////////////////////
@@ -65,13 +55,6 @@
 #define DPAD_DOWN_LEFT	6
 #define DPAD_LEFT	7
 #define DPAD_UP_LEFT	8
-
-
-///////////////////////////////////      RATION       /////////////////////////////
-/*#define POSITION_THROTTLE_MIN -32768
-#define POSITION_THROTTLE_MAX 32767
-#define POSITION_DPAD_MIN -32768
-#define POSITION_DPAD_MAX 32767*/
 
 
 ///////////////////////////////////      OV7670       /////////////////////////////
@@ -104,14 +87,5 @@
 
 #define LED_SIZE_MIN 10
 #define LED_SIZE_MAX 90*/
-
-
-///////////////////////////////////      RATION       /////////////////////////////
-#define POSITION_ANALOG_THROTTLE_OUTPUT_MIN -32768
-#define POSITION_ANALOG_THROTTLE_OUTPUT_MAX 32767
-#define POSITION_ANALOG_AXE_OUTPUT_MIN -32768
-#define POSITION_ANALOG_AXE_OUTPUT_MAX 32767
-#define POSITION_ANALOG_DPAD_OUTPUT_MIN -100
-#define POSITION_ANALOG_DPAD_OUTPUT_MAX 100
 
 #endif /* _CONFIG_JOYSTICK_6DOF_H_ */

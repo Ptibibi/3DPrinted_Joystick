@@ -1,67 +1,68 @@
 #include "Button_Matrix.h"
 
 CButtonMatrix::CButtonMatrix(_gpioxConfig* pRowMap, _gpioxConfig* pColMap) {
-  memcpy(rowMap, pRowMap, sizeof(_gpioxConfig) * BUTTON_MATRIX_NB_ROWS);
-  memcpy(colMap, pColMap, sizeof(_gpioxConfig) * BUTTON_MATRIX_NB_COLS);
-  stateCol = 0;
+	memcpy(rowMap, pRowMap, sizeof(_gpioxConfig) * BUTTON_MATRIX_NB_ROWS);
+	memcpy(colMap, pColMap, sizeof(_gpioxConfig) * BUTTON_MATRIX_NB_COLS);
+	stateMatrix = 0;
+	uint16_t i;
+	for (i = 0; i < BUTTON_MATRIX_NB; i++)
+		buttonStatus[i] = GPIO_PIN_RESET;
 
-  timer.start();
+	timer.start();
 }
 
 CButtonMatrix::~CButtonMatrix() {
 }
 
 void CButtonMatrix::initialize() {
-  //Set ROWS
-  uint16_t i;
-  for (i=0; i<BUTTON_MATRIX_NB_ROWS; i++) {
-      setConfigGPIO(rowMap[i]);
-  }
+	//Set ROWS
+	uint16_t i;
+	for (i=0; i<BUTTON_MATRIX_NB_ROWS; i++) {
+		setConfigGPIO(rowMap[i].gpiox, rowMap[i].initDef);
+		HAL_GPIO_WritePin(rowMap[i].gpiox, rowMap[i].initDef.Pin, GPIO_PIN_RESET);
+	}
 
-  //Set COLS
-  for (i=0; i<BUTTON_MATRIX_NB_COLS; i++) {
-      setConfigGPIO(colMap[i]);
-  }
-  timer.sleep(100);
+	//Set COLS
+	for (i=0; i<BUTTON_MATRIX_NB_COLS; i++) {
+		setConfigGPIO(colMap[i].gpiox, colMap[i].initDef);
+	}
+	timer.sleep(100);
 
-  stateCol=1;
-  setMatrix(stateCol);
-}
-
-void CButtonMatrix::setMatrix(uint16_t stateCol) {
-  uint16_t i;
-  for (i=0; i<BUTTON_MATRIX_NB_COLS; i++) {
-    GPIO_PinState outputState = (GPIO_PinState)((stateCol >> i) & 0x0001);
-    HAL_GPIO_WritePin(colMap[i].gpiox, colMap[i].Pin, outputState);
-  }
-}
-
-void CButtonMatrix::nextButtonMatrixState() {
-  bool resetCol = (stateCol >> BUTTON_MATRIX_NB_COLS) & 0x0001;
-  if (resetCol)
-    stateCol=1;
-  else
-    stateCol=stateCol<<1;
-  setMatrix(stateCol);
+	stateMatrix = 0;
+	setMatrix(stateMatrix);
 }
 
 void CButtonMatrix::updateButtonStatus() {
-  uint16_t i;
-  uint16_t offsetCol=0;
+	uint16_t i;
+	uint16_t indexButton;
+	for (i=0; i<BUTTON_MATRIX_NB_COLS; i++) {
+		indexButton = i + (stateMatrix * BUTTON_MATRIX_NB_COLS);
+		buttonStatus[indexButton] = HAL_GPIO_ReadPin(rowMap[i].gpiox, rowMap[i].initDef.Pin);
+	}
+}
 
-  for (i=0; i<BUTTON_MATRIX_NB_COLS; i++) {
-    if ((stateCol >> i) & 0x0001) {
-	offsetCol = i * BUTTON_MATRIX_NB_ROWS;
-	break;
-    }
-  }
+void CButtonMatrix::updateMatrixStatus() {
+	if (stateMatrix >= BUTTON_MATRIX_NB_ROWS - 1)
+		stateMatrix = 0;
+	else
+		stateMatrix++;
 
-  for (i=0; i<BUTTON_MATRIX_NB_ROWS; i++)
-    buttonStatus[i + offsetCol] = HAL_GPIO_ReadPin(rowMap[i].gpiox, rowMap[i].Pin);
+	setMatrix(stateMatrix);
+}
+
+void CButtonMatrix::setMatrix(uint16_t stateMatrix) {
+	uint16_t i;
+	for (i=0; i < BUTTON_MATRIX_NB_ROWS; i++) {
+	    HAL_GPIO_WritePin(rowMap[i].gpiox, rowMap[i].initDef.Pin, GPIO_PIN_RESET);
+	}
+    HAL_GPIO_WritePin(rowMap[stateMatrix].gpiox, rowMap[stateMatrix].initDef.Pin, GPIO_PIN_SET);
 }
 
 void CButtonMatrix::getButtonStatus(GPIO_PinState* pButtonStatus) {
-  updateButtonStatus();
-  nextButtonMatrixState();
-  memcpy(pButtonStatus, buttonStatus, sizeof(buttonStatus));
+	updateButtonStatus();
+	updateMatrixStatus();
+
+	uint16_t i;
+	for (i = 0; i < BUTTON_MATRIX_NB; i++)
+		pButtonStatus[i] = buttonStatus[i];
 }

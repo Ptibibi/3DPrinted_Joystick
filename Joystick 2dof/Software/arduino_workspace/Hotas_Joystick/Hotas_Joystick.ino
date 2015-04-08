@@ -13,23 +13,20 @@
 #include "Analog_Measure.h"
 #include "HID_Report.h"
 
-bool buttonStatus[BUTTON_GAME_NB + BUTTON_CONTROL_NB];
-bool gameButtonStatus[BUTTON_GAME_NB];
-bool controlButtonStatus[BUTTON_CONTROL_NB];
+bool buttonStatus[BUTTON_MATRIX_NB];
 int rx, ry, rz, x, y;
 int throttlePosition;
 byte dPad1Status, dPad2Status;
 int state;
+int i;
 
 byte rowMap[BUTTON_MATRIX_NB_ROWS] = {
-  BUTTON_MATRIX_ROWS_PIN_1, 
-  BUTTON_MATRIX_ROWS_PIN_2, 
-  BUTTON_MATRIX_ROWS_PIN_3, 
-  BUTTON_MATRIX_ROWS_PIN_4, 
-  BUTTON_MATRIX_ROWS_PIN_5, 
-  BUTTON_MATRIX_ROWS_PIN_6, 
-  BUTTON_MATRIX_ROWS_PIN_7, 
-  BUTTON_MATRIX_ROWS_PIN_8,
+  BUTTON_MATRIX_ROWS_PIN_1,
+  BUTTON_MATRIX_ROWS_PIN_2,
+  BUTTON_MATRIX_ROWS_PIN_3,
+  BUTTON_MATRIX_ROWS_PIN_4,
+  BUTTON_MATRIX_ROWS_PIN_5,
+  BUTTON_MATRIX_ROWS_PIN_6,
 };
 byte colMap[BUTTON_MATRIX_NB_COLS] = {
   BUTTON_MATRIX_COLS_PIN_1, 
@@ -37,10 +34,11 @@ byte colMap[BUTTON_MATRIX_NB_COLS] = {
   BUTTON_MATRIX_COLS_PIN_3, 
   BUTTON_MATRIX_COLS_PIN_4, 
   BUTTON_MATRIX_COLS_PIN_5, 
+  BUTTON_MATRIX_COLS_PIN_6, 
 };
 
 
-//CButtonMatrix* buttonMatrix = new CButtonMatrix(rowMap, colMap);
+CButtonMatrix* buttonMatrix = new CButtonMatrix(rowMap, colMap);
 CAnalogMeasure* axeRX = new CAnalogMeasure(ANALOG_INPUT_PIN_AXE_RX, POSITION_ANALOG_AXE_OUTPUT_MIN, POSITION_ANALOG_AXE_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_AXE_RX_ADDR_OFFSET, "Axe RX");
 CAnalogMeasure* axeRY = new CAnalogMeasure(ANALOG_INPUT_PIN_AXE_RY, POSITION_ANALOG_AXE_OUTPUT_MIN, POSITION_ANALOG_AXE_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_AXE_RY_ADDR_OFFSET, "Axe RY");
 //CAnalogMeasure* axeRZ = new CAnalogMeasure(ANALOG_INPUT_PIN_AXE_RZ, POSITION_ANALOG_AXE_OUTPUT_MIN, POSITION_ANALOG_AXE_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_AXE_RZ_ADDR_OFFSET, "Axe RZ");
@@ -67,7 +65,7 @@ void setup() {
   Serial.end();
   
   //Initialize button matrix
-  //buttonMatrix->initialize();
+  buttonMatrix->initialize();
   
   //Initialize analog input
   axeRX->initialize();
@@ -81,8 +79,8 @@ void setup() {
   hidReport->initialize();
   
   //Initialize variables
-  memset(gameButtonStatus, false, sizeof(gameButtonStatus));
-  memset(controlButtonStatus, false, sizeof(controlButtonStatus));
+  for (i = 0; i < BUTTON_MATRIX_NB; i++)
+    buttonStatus[i] = false;
   rx = 0;
   ry = 0;
   rz = 0;
@@ -101,13 +99,7 @@ void setup() {
 
 void InterruptTimer2() { // debut de la fonction d'interruption Timer2
   //Get button
-  //buttonMatrix->getButtonStatus(buttonStatus);
-  //Extract control part
-  //bool* pButton = buttonStatus;
-  //memcpy(gameButtonStatus, pButton, sizeof(gameButtonStatus));
-  //Extract game part
-  //pButton = &buttonStatus[BUTTON_GAME_NB];
-  //memcpy(controlButtonStatus, pButton, sizeof(controlButtonStatus));
+  buttonMatrix->getButtonStatus(buttonStatus);
   
   //get analog
   switch(state) {
@@ -126,7 +118,7 @@ void InterruptTimer2() { // debut de la fonction d'interruption Timer2
 void loop() {
   /*
   static int count = 0;
-  gameButtonStatus[count] = !gameButtonStatus[count];
+  buttonStatus[count] = !buttonStatus[count];
   if (count < BUTTON_GAME_NB - 1)
     count++;
   else
@@ -150,6 +142,6 @@ void loop() {
     dPad2Status = 0;
     
   //Set HID report
-  hidReport->sendReport(gameButtonStatus, rx, ry, rz, x, y, throttlePosition, dPad1Status, dPad2Status);
+  hidReport->sendReport(buttonStatus, rx, ry, rz, x, y, throttlePosition, dPad1Status, dPad2Status);
   delay(50);
 }
