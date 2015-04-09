@@ -1100,11 +1100,11 @@ extern Gamepad_ Gamepad;
 #define HOTAS_DPAD_UP_LEFT 8
 
 typedef union {
-	// 32 Buttons, 8 Axis, 2 Throttles, 2 D-Pads
+	// 64 Buttons, 5 Axis, 1 Throttles, 2 D-Pads
 	uint8_t whole8[15];
 	uint16_t whole16[15 / 2];
 	uint32_t whole32[15 / 4];
-	uint32_t buttons;
+	uint64_t buttons;
 
 	struct{
 		uint8_t button1 : 1;
@@ -1142,6 +1142,42 @@ typedef union {
 		uint8_t button30 : 1;
 		uint8_t button31 : 1;
 		uint8_t button32 : 1;
+		
+		uint8_t button33 : 1;
+		uint8_t button34 : 1;
+		uint8_t button35 : 1;
+		uint8_t button36 : 1;
+		uint8_t button37 : 1;
+		uint8_t button38 : 1;
+		uint8_t button39 : 1;
+		uint8_t button40 : 1;
+
+		uint8_t button41 : 1;
+		uint8_t button42 : 1;
+		uint8_t button43 : 1;
+		uint8_t button44 : 1;
+		uint8_t button45 : 1;
+		uint8_t button46 : 1;
+		uint8_t button47 : 1;
+		uint8_t button48 : 1;
+
+		uint8_t button49 : 1;
+		uint8_t button50 : 1;
+		uint8_t button51 : 1;
+		uint8_t button52 : 1;
+		uint8_t button53 : 1;
+		uint8_t button54 : 1;
+		uint8_t button55 : 1;
+		uint8_t button56 : 1;
+
+		uint8_t button57 : 1;
+		uint8_t button58 : 1;
+		uint8_t button59 : 1;
+		uint8_t button60 : 1;
+		uint8_t button61 : 1;
+		uint8_t button62 : 1;
+		uint8_t button63 : 1;
+		uint8_t button64 : 1;
 
 		int16_t	rxAxis;
 		int16_t	ryAxis;
@@ -1174,11 +1210,11 @@ public:
 	}
 
 	inline void write(void){ HID_SendReport(HID_REPORTID_HotasReport, &_report, sizeof(_report)); }
-	inline void press(uint8_t b){ _report.buttons |= (uint32_t)1 << (b - 1); }
-	inline void release(uint8_t b){ _report.buttons &= ~((uint32_t)1 << (b - 1)); }
+	inline void press(uint8_t b){ _report.buttons |= (uint64_t)1 << (b - 1); }
+	inline void release(uint8_t b){ _report.buttons &= ~((uint64_t)1 << (b - 1)); }
 	inline void releaseAll(void){ memset(&_report, 0x00, sizeof(_report)); }
 
-	inline void buttons(uint32_t b){ _report.buttons = b; }
+	inline void buttons(uint64_t b){ _report.buttons = b; }
 	inline void rxAxis(int16_t a){ _report.rxAxis = a; }
 	inline void ryAxis(int16_t a){ _report.ryAxis = a; }
 	inline void rzAxis(int16_t a){ _report.rzAxis = a; }

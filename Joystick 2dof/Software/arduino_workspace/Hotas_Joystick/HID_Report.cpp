@@ -10,7 +10,7 @@ void CHidReport::initialize() {
   Hotas.begin();
 }
 
-void CHidReport::sendReport(bool* pButton, int rx, int ry, int rz, int x, int y, int throttleValue, byte dPad1Status, byte dPad2Status) {
+void CHidReport::sendReport(bool* pButton, int rx, int ry, int rz, int x, int y, int throttleValue) {
   int i;
   for (i = 0; i < BUTTON_MATRIX_NB; i++)
   {
@@ -28,8 +28,8 @@ void CHidReport::sendReport(bool* pButton, int rx, int ry, int rz, int x, int y,
   
   Hotas.throttle(throttleValue);
   
-  Hotas.dPad1(dPad1Status);
-  Hotas.dPad2(dPad2Status);
+  Hotas.dPad1(0);
+  Hotas.dPad2(0);
   
   Hotas.write();
 }

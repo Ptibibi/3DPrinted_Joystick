@@ -16,7 +16,6 @@
 bool buttonStatus[BUTTON_MATRIX_NB];
 int rx, ry, rz, x, y;
 int throttlePosition;
-byte dPad1Status, dPad2Status;
 int state;
 int i;
 
@@ -41,27 +40,62 @@ byte colMap[BUTTON_MATRIX_NB_COLS] = {
 CButtonMatrix* buttonMatrix = new CButtonMatrix(rowMap, colMap);
 CAnalogMeasure* axeRX = new CAnalogMeasure(ANALOG_INPUT_PIN_AXE_RX, POSITION_ANALOG_AXE_OUTPUT_MIN, POSITION_ANALOG_AXE_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_AXE_RX_ADDR_OFFSET, "Axe RX");
 CAnalogMeasure* axeRY = new CAnalogMeasure(ANALOG_INPUT_PIN_AXE_RY, POSITION_ANALOG_AXE_OUTPUT_MIN, POSITION_ANALOG_AXE_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_AXE_RY_ADDR_OFFSET, "Axe RY");
-//CAnalogMeasure* axeRZ = new CAnalogMeasure(ANALOG_INPUT_PIN_AXE_RZ, POSITION_ANALOG_AXE_OUTPUT_MIN, POSITION_ANALOG_AXE_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_AXE_RZ_ADDR_OFFSET, "Axe RZ");
-//CAnalogMeasure* axeX = new CAnalogMeasure(ANALOG_INPUT_PIN_AXE_X, POSITION_ANALOG_AXE_OUTPUT_MIN, POSITION_ANALOG_AXE_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_AXE_X_ADDR_OFFSET, "Axe X");
-//CAnalogMeasure* axeY = new CAnalogMeasure(ANALOG_INPUT_PIN_AXE_Y, POSITION_ANALOG_AXE_OUTPUT_MIN, POSITION_ANALOG_AXE_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_AXE_Y_ADDR_OFFSET, "Axe Y");
-//CAnalogMeasure* throttle = new CAnalogMeasure(ANALOG_INPUT_PIN_THROTTLE, POSITION_ANALOG_THROTTLE_OUTPUT_MIN, POSITION_ANALOG_THROTTLE_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_THROTTLE_ADDR_OFFSET, "Throttle");
+CAnalogMeasure* axeRZ = new CAnalogMeasure(ANALOG_INPUT_PIN_AXE_RZ, POSITION_ANALOG_AXE_OUTPUT_MIN, POSITION_ANALOG_AXE_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_AXE_RZ_ADDR_OFFSET, "Axe RZ");
+CAnalogMeasure* axeX = new CAnalogMeasure(ANALOG_INPUT_PIN_AXE_X, POSITION_ANALOG_AXE_OUTPUT_MIN, POSITION_ANALOG_AXE_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_AXE_X_ADDR_OFFSET, "Axe X");
+CAnalogMeasure* axeY = new CAnalogMeasure(ANALOG_INPUT_PIN_AXE_Y, POSITION_ANALOG_AXE_OUTPUT_MIN, POSITION_ANALOG_AXE_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_AXE_Y_ADDR_OFFSET, "Axe Y");
+CAnalogMeasure* throttle = new CAnalogMeasure(ANALOG_INPUT_PIN_THROTTLE, POSITION_ANALOG_THROTTLE_OUTPUT_MIN, POSITION_ANALOG_THROTTLE_OUTPUT_MAX, STORAGE_ANALOG_MEASURE_THROTTLE_ADDR_OFFSET, "Throttle");
 CHidReport* hidReport = new CHidReport();
 
 ///////////////////////////////////   SETUP    ////////////////////////////////////
 void setup() {
   Serial.begin(9600);
+  bool exitCalib = false;
   do {
-    if (Serial.available() > 0) {
-      Serial.print("aivailable\n");
-      axeRX->setCalibration();
-      axeRY->setCalibration();
-      //axeRZ->setCalibration();
-      //axeX->setCalibration();
-      //axeY->setCalibration();
-      //throttle->setCalibration();
-    }
+    Serial.print("Send any character to start calibration manager:\n");
     delay(1000);
-  } while(millis() < 10000);
+    if (Serial.available() > 0) {
+      Serial.print("Open calibration manager:\n");
+      Serial.read();
+      do {
+        Serial.print("************************************************************************\n");
+        Serial.print("************************************************************************\n");
+        Serial.print("Select option:\n");
+        Serial.print("[1] Calibration axeRX\n");
+        Serial.print("[2] Calibration axeRX\n");
+        Serial.print("[3] Calibration axeRX\n");
+        Serial.print("[4] Calibration axeRX\n");
+        Serial.print("[5] Calibration axeRX\n");
+        Serial.print("[6] Calibration axeRX\n");
+        Serial.print("\n");
+        //Serial.print("[C] Clear\n");
+        Serial.print("[0] Exit\n");
+        
+        do {
+          if (Serial.available() > 0) {
+            char c = Serial.read();
+            switch (c) {
+              case '1': axeRX->setCalibration(); break;
+              case '2': axeRY->setCalibration(); break;
+              case '3': axeRZ->setCalibration(); break;
+              case '4': axeX->setCalibration(); break;
+              case '5': axeY->setCalibration(); break;
+              case '6': throttle->setCalibration(); break;
+              
+              case '0': exitCalib = true; break;
+              default: 
+                Serial.print("[");
+                Serial.print(c);
+                Serial.print("] is a wrong value...\nRetry...\n");
+            }
+            break;
+          }
+        } while(1);
+      } while(!exitCalib);
+    }
+  } while((millis() < 10000) && !exitCalib);
+    Serial.print("Close calibration manager:\n");
+  Serial.print("System start...\n");
+  Serial.print("You can close the window\n");
   Serial.end();
   
   //Initialize button matrix
@@ -70,10 +104,10 @@ void setup() {
   //Initialize analog input
   axeRX->initialize();
   axeRY->initialize();
-  //axeRZ->initialize();
-  //axeX->initialize();
-  //axeY->initialize();
-  //throttle->initialize();
+  axeRZ->initialize();
+  axeX->initialize();
+  axeY->initialize();
+  throttle->initialize();
   
   //Initialize joystick report
   hidReport->initialize();
@@ -87,8 +121,6 @@ void setup() {
   x = 0;
   y = 0;
   throttlePosition = 0;
-  dPad1Status = 0;
-  dPad2Status = 4;
   state = 0;
   
   //Enable inter
@@ -99,16 +131,16 @@ void setup() {
 
 void InterruptTimer2() { // debut de la fonction d'interruption Timer2
   //Get button
-  buttonMatrix->getButtonStatus(buttonStatus);
+  //buttonMatrix->getButtonStatus(buttonStatus);
   
   //get analog
   switch(state) {
     case 0:  rx = axeRX->getMeasure(); state++; break;
     case 1:  ry = axeRY->getMeasure(); state++; break;
-    //case 2:  rz = axeRZ->getMeasure(); state++; break;
-    //case 3:  x = axeX->getMeasure(); state++; break;
-    //case 4:  y = axeY->getMeasure(); state++; break;
-    //case 5:  throttlePosition = throttle->getMeasure(); state = 0; break;
+    case 2:  rz = axeRZ->getMeasure(); state++; break;
+    case 3:  x = axeX->getMeasure(); state++; break;
+    case 4:  y = axeY->getMeasure(); state++; break;
+    case 5:  throttlePosition = throttle->getMeasure(); state = 0; break;
     default: state = 0; break;
   }
 }
@@ -116,32 +148,13 @@ void InterruptTimer2() { // debut de la fonction d'interruption Timer2
 
 ///////////////////////////////////   LOOP    ////////////////////////////////////
 void loop() {
-  /*
   static int count = 0;
   buttonStatus[count] = !buttonStatus[count];
-  if (count < BUTTON_GAME_NB - 1)
+  if (count < BUTTON_MATRIX_NB - 1)
     count++;
   else
     count = 0;
-    
-  rx = (int)random(-32768, 32767);
-  ry = (int)random(-32768, 32767);
-  rz = (int)random(-32768, 32767);
-  x = (int)random(-32768, 32767);
-  y = (int)random(-32768, 32767);
-  throttlePosition = (int)random(-32768, 32767);
-  */
-  if (dPad1Status < 8)
-    dPad1Status++;
-  else
-    dPad1Status = 0;
-  
-  if (dPad2Status < 8)
-    dPad2Status++;
-  else
-    dPad2Status = 0;
-    
   //Set HID report
-  hidReport->sendReport(buttonStatus, rx, ry, rz, x, y, throttlePosition, dPad1Status, dPad2Status);
+  hidReport->sendReport(buttonStatus, rx, ry, rz, x, y, throttlePosition);
   delay(50);
 }

@@ -93,9 +93,9 @@ int CAnalogMeasure::applicCoeff(int value) {
     if (pos > outMax)
       pos = outMax;
   }
-  else if (inMiddlePart2 < val) {
+  else if (val < inMiddlePart2) {
     pos = coeffAPart2 * val + coeffBPart2;
-    if (outMin > pos)
+    if (pos < outMin)
       pos = outMin;
   }
   else
@@ -117,25 +117,25 @@ void CAnalogMeasure::setCalibration() {
   Serial.print("CALIBRATION ");
   Serial.print(nameMeasure);
   Serial.print(" Set MAX!\n");
-  delay(5000);
+  delay(2000);
   int maxValue = getAnalogValue();
   
   Serial.print("CALIBRATION ");
   Serial.print(nameMeasure);
   Serial.print(" Release!\n");
-  delay(5000);
+  delay(2000);
   int maxReleaseValue = getAnalogValue();
   
   Serial.print("CALIBRATION ");
   Serial.print(nameMeasure);
   Serial.print(" Set MIN!\n");
-  delay(5000);
+  delay(2000);
   int minValue = getAnalogValue();
   
   Serial.print("CALIBRATION ");
   Serial.print(nameMeasure);
   Serial.print(" Release!\n");
-  delay(5000);
+  delay(2000);
   int minReleaseValue = getAnalogValue();
   
   Serial.print("CALIBRATION ");
@@ -146,8 +146,8 @@ void CAnalogMeasure::setCalibration() {
     inputRatioNeutral = (int)abs(maxReleaseValue - inMiddle) + ANALOG_INPUT_NEUTRAL_OFFSET;
   else
     inputRatioNeutral = (int)abs(minReleaseValue - inMiddle) + ANALOG_INPUT_NEUTRAL_OFFSET;
-  inputRatioMax = (uint16_t)maxValue;
-  inputRatioMin = (uint16_t)minValue;
+  inputRatioMax = (int)maxValue;
+  inputRatioMin = (int)minValue;
   
   saveCoeff();
   updateCoeff();
@@ -156,5 +156,5 @@ void CAnalogMeasure::setCalibration() {
   Serial.println(inputRatioMax);
   Serial.println(outputRatioMin);
   Serial.println(outputRatioMax);
-  delay(5000);
+  delay(2000);
 }

@@ -1,9 +1,13 @@
 #include "Button_Matrix.h"
 
 CButtonMatrix::CButtonMatrix(byte* pRowMap, byte* pColMap) {
-  memcpy(rowMap, pRowMap, sizeof(byte) * BUTTON_MATRIX_NB_ROWS);
-  memcpy(colMap, pColMap, sizeof(byte) * BUTTON_MATRIX_NB_COLS);
   int i;
+  for (i = 0; i < BUTTON_MATRIX_NB_ROWS; i++)
+    rowMap[i] = pRowMap[i];
+    
+  for (i = 0; i < BUTTON_MATRIX_NB_COLS; i++)
+    colMap[i] = pColMap[i];
+    
   for (i = 0; i < BUTTON_MATRIX_NB; i++)
     buttonStatus[i] = false;
   stateMatrix = 0;
@@ -16,13 +20,13 @@ void CButtonMatrix::initialize() {
   //Set ROWS
   int i;
   for (i=0; i<BUTTON_MATRIX_NB_ROWS; i++) {
-    pinMode(rowMap[i], OUTPUT);
-    digitalWrite(rowMap[i], LOW);
+    pinMode(rowMap[i], INPUT);
   }
   
   //Set COLS
   for (i=0; i<BUTTON_MATRIX_NB_COLS; i++) {
-    pinMode(colMap[i], INPUT);
+    pinMode(colMap[i], OUTPUT);
+    digitalWrite(colMap[i], LOW);
   }
   delay(100);
   
@@ -33,14 +37,15 @@ void CButtonMatrix::initialize() {
 void CButtonMatrix::updateButtonStatus() {
   int i;
   int indexButton;
-  for (i=0; i<BUTTON_MATRIX_NB_COLS; i++) {
-    indexButton = i + (stateMatrix * BUTTON_MATRIX_NB_COLS);
+  int offset = stateMatrix * BUTTON_MATRIX_NB_ROWS;
+  for (i=0; i<BUTTON_MATRIX_NB_ROWS; i++) {
+    indexButton = i + offset;
     buttonStatus[indexButton] = digitalRead(rowMap[i]);
   }
 }
       
 void CButtonMatrix::updateMatrixStatus() {
-  if (stateMatrix >= BUTTON_MATRIX_NB_ROWS - 1)
+  if (stateMatrix >= BUTTON_MATRIX_NB_COLS - 1)
     stateMatrix = 0;
   else
     stateMatrix++;
@@ -50,10 +55,10 @@ void CButtonMatrix::updateMatrixStatus() {
 
 void CButtonMatrix::setMatrix(int stateMatrix) {
   int i;
-  for (i=0; i < BUTTON_MATRIX_NB_ROWS; i++) {
-    digitalWrite(rowMap[i], LOW);
+  for (i=0; i < BUTTON_MATRIX_NB_COLS; i++) {
+    digitalWrite(colMap[i], LOW);
   }
-  digitalWrite(rowMap[stateMatrix], HIGH);
+  digitalWrite(colMap[stateMatrix], HIGH);
 }
 
 void CButtonMatrix::getButtonStatus(bool* pButtonStatus) {

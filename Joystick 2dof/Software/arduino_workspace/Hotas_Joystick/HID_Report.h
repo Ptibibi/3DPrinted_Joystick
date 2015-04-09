@@ -10,7 +10,7 @@ class CHidReport {
     CHidReport();
     ~CHidReport();
     void initialize();
-    void sendReport(bool* pButton, int rx, int ry, int rz, int x, int y, int throttleValue, byte dPad1Status, byte dPad2Status);
+    void sendReport(bool* pButton, int rx, int ry, int rz, int x, int y, int throttleValue);
     
   //Variables
   private:
