@@ -1,3 +1,13 @@
+/*******************************************************************************
+Analog_Measure.h
+V 0.02
+
+Description:
+
+********************************************************************************
+********************************************************************************
+V0.02 --> 12/04/15	Edition originale by BRB
+*******************************************************************************/
 #ifndef _ANALOG_MEASURE_
 #define _ANALOG_MEASURE_
 
@@ -14,6 +24,9 @@ class CAnalogMeasure {
     void setCalibration();
     void initialize();
     int getMeasure();
+    int getRationMin();
+    int getRationMax();
+    int getRationNeutral();
     
   private:
     void initCoeff();

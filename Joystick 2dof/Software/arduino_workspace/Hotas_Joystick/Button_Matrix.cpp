@@ -1,3 +1,13 @@
+/*******************************************************************************
+Button_Matrix.cpp
+V 0.02
+
+Description:
+
+********************************************************************************
+********************************************************************************
+V0.02 --> 12/04/15	Edition originale by BRB
+*******************************************************************************/
 #include "Button_Matrix.h"
 
 CButtonMatrix::CButtonMatrix(byte* pRowMap, byte* pColMap) {
@@ -67,6 +77,6 @@ void CButtonMatrix::getButtonStatus(bool* pButtonStatus) {
   
   int i;
   for (i = 0; i < BUTTON_MATRIX_NB; i++)
-    pButtonStatus[i] = buttonStatus[i];
+    *(pButtonStatus + i) = buttonStatus[i];
 }
 

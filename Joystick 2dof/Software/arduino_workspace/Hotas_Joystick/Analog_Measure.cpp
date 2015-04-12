@@ -1,3 +1,13 @@
+/*******************************************************************************
+Analog_Measure.cpp
+V 0.02
+
+Description:
+
+********************************************************************************
+********************************************************************************
+V0.02 --> 12/04/15	Edition originale by BRB
+*******************************************************************************/
 #include "Analog_Measure.h"
 
 CAnalogMeasure::CAnalogMeasure(int pinNumber, int outputMin, int outputMax, int storageAddr, const char* name) {
@@ -10,8 +20,6 @@ CAnalogMeasure::CAnalogMeasure(int pinNumber, int outputMin, int outputMax, int 
   coeffBPart1 = 0;
   coeffAPart2 = 0;
   coeffBPart2 = 0;
-  
-  pinMode(pin, INPUT);
 }
 
 CAnalogMeasure::~CAnalogMeasure() {
@@ -35,7 +43,7 @@ void CAnalogMeasure::initCoeff() {
   }
   else {
     inputRatioMin = 0;
-    inputRatioMax = 1024;
+    inputRatioMax = 1023;
     inputRatioNeutral = 0;
   }
 }
@@ -61,9 +69,7 @@ void CAnalogMeasure::updateCoeff() {
   float outMin = (float)outputRatioMin;
   float outMax = (float)outputRatioMax;
   float outMiddle = (outMax - outMin) / 2 + outMin;
-
-  //coeffA = (outMax - outMin) / (inMax - inMin);
-  //coeffB = ((inMax * outMin) - (inMin * outMax)) / (inMax - inMin);
+  
   coeffAPart1 = (outMax - outMiddle) / (inMax - inMiddlePart1);
   coeffBPart1 = ((inMax * outMiddle) - (inMiddlePart1 * outMax)) / (inMax - inMiddlePart1);
 
@@ -157,4 +163,16 @@ void CAnalogMeasure::setCalibration() {
   Serial.println(outputRatioMin);
   Serial.println(outputRatioMax);
   delay(2000);
+}
+
+int CAnalogMeasure::getRationMin() {
+  return inputRatioMin;
+}
+
+int CAnalogMeasure::getRationMax() {
+  return inputRatioMax;
+}
+
+int CAnalogMeasure::getRationNeutral() {
+  return inputRatioNeutral;
 }
