@@ -11,8 +11,8 @@
 
 #include "Timer.h"
 
-#include "Config_Joystick_6Dof.h"
-#include "Typedef_Joystick_6Dof.h"
+#include "../src/Config_Joystick_6Dof.h"
+#include "../src/Typedef_Joystick_6Dof.h"
 
 class CAnalogDpad {
   //Method

@@ -24,10 +24,10 @@ Timer::sleep(ticks_t ticks)
 
 // ----- SysTick_Handler() ----------------------------------------------------
 
-extern "C" void
+/*extern "C" void
 SysTick_Handler(void)
 {
   Timer::tick();
-}
+}*/
 
 // ----------------------------------------------------------------------------

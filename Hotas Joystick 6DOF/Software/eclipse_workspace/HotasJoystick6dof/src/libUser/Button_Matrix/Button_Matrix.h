@@ -1,5 +1,5 @@
-#ifndef _BUTTON_MATRIX_H_
-#define _BUTTON_MATRIX_H_
+#ifndef _BUTTON_MATRIX_
+#define _BUTTON_MATRIX_
 
 #ifdef __cplusplus
  extern "C" {
@@ -7,7 +7,6 @@
 
 #include "stdint.h"
 #include "stdbool.h"
-#include "string.h"
 #include "diag/Trace.h"
 
 #include "stm32f4xx.h"
@@ -17,19 +16,18 @@
 
 #include "Timer.h"
 
-#include "Config_Joystick_6Dof.h"
-#include "Typedef_Joystick_6Dof.h"
-
-#include "Timer.h"
-#include "Config_Stm32F4.h"
+#include "../src/Config_Joystick_6Dof.h"
+#include "../src/Typedef_Joystick_6Dof.h"
+#include "../src/Config_Stm32F4.h"
+#include "../src/coreUser/Core.h"
 
 class CButtonMatrix {
   //Method
   public:
-    CButtonMatrix(_gpioxConfig* pRowMap, _gpioxConfig* pColMap);
+    CButtonMatrix(_gpioxConfig* pRowMap, _gpioxConfig* pColMap, GPIO_PinState* pButtonStatus);
     ~CButtonMatrix();
     void initialize();
-    void getButtonStatus(GPIO_PinState* pButtonStatus);
+    void getButtonStatus();
 
   private:
     void updateButtonStatus();
@@ -38,11 +36,13 @@ class CButtonMatrix {
 
   //Variables
   private:
+	CCore* core = CCore::GetInstance();
     Timer timer;
-    _gpioxConfig rowMap[BUTTON_MATRIX_NB_ROWS];
-    _gpioxConfig colMap[BUTTON_MATRIX_NB_COLS];
-    GPIO_PinState buttonStatus[BUTTON_MATRIX_NB];
+    GPIO_PinState* buttonStatus;
     uint16_t stateMatrix;
+
+    CPin* rowPin[BUTTON_MATRIX_NB_ROWS];
+    CPin* colPin[BUTTON_MATRIX_NB_COLS];
 
 };
 
@@ -50,4 +50,4 @@ class CButtonMatrix {
 }
 #endif
 
-#endif /* _BUTTON_MATRIX_H_ */
+#endif /* _BUTTON_MATRIX_ */

@@ -3,8 +3,9 @@
   * @file           : USB_DEVICE
   * @date           : 11/04/2015 11:32:28  
   * @version        : v1.0_Cube
-  * @brief          : Header for usb_device file.
+  * @brief          : This file implements the USB Device 
   ******************************************************************************
+  *
   * COPYRIGHT(c) 2015 STMicroelectronics
   *
   * Redistribution and use in source and binary forms, with or without modification,
@@ -31,28 +32,36 @@
   *
   ******************************************************************************
 */
-/* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __usb_device_H
-#define __usb_device_H
-#ifdef __cplusplus
- extern "C" {
-#endif
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f4xx.h"
-#include "stm32f4xx_hal.h"
-#include "usbd_def.h"
 
-extern USBD_HandleTypeDef hUsbDeviceFS;
+#include "usb_device.h"
+#include "usbd_core.h"
+#include "usbd_desc.h"
+#include "usbd_customhid.h"
+#include "usbd_custom_hid_if.h"
 
-/* USB_Device init function */	
-void MX_USB_DEVICE_Init(void);
+/* USB Device Core handle declaration */
+USBD_HandleTypeDef hUsbDeviceFS;
 
-#ifdef __cplusplus
+/* init function */				        
+void MX_USB_DEVICE_Init(void)
+{
+  /* Init Device Library,Add Supported Class and Start the library*/
+  USBD_Init(&hUsbDeviceFS, &FS_Desc, DEVICE_FS);
+
+  USBD_RegisterClass(&hUsbDeviceFS, &USBD_CUSTOM_HID);
+
+  USBD_CUSTOM_HID_RegisterInterface(&hUsbDeviceFS, &USBD_CustomHID_fops_FS);
+
+  USBD_Start(&hUsbDeviceFS);
 }
-#endif
-#endif /*__usb_device_H */
 
+void MX_USB_DEVICE_SendReport(void)
+{
+  uint8_t buffer[4];
+  USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, buffer, 4);
+}
 /**
   * @}
   */

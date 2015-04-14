@@ -16,11 +16,11 @@
 #include "Timer.h"
 
 //Common files
-#include "Config_Joystick_6Dof.h"
-#include "Typedef_Joystick_6Dof.h"
 
-//Hardware library
-#include "Config_Stm32F4.h"
+#include "../src/Config_Joystick_6Dof.h"
+#include "../src/Typedef_Joystick_6Dof.h"
+#include "../src/Config_Stm32F4.h"
+#include "../src/coreUser/Core.h"
 
 //Functional library
 
@@ -42,6 +42,7 @@ class CAnalogMeasure {
   
   //Variables
   private:
+	CCore* core = CCore::GetInstance();
     Timer timer;
     _gpioxConfig gpioConf;
     ADC_HandleTypeDef adcHandle;

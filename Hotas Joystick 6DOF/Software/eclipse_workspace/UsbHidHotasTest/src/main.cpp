@@ -15,8 +15,10 @@
 #include "stm32f4xx_hal_pwr.h"
 #include "stm32f4xx_hal_flash.h"
 
-#include "usb_device.h"
-#include "usbd_custom_hid_if.h"
+/*#include "usb_device.h"
+#include "usbd_custom_hid_if.h"*/
+
+#include "libUser/HID_Report.h"
 
 /* USER CODE BEGIN Includes */
 
@@ -37,7 +39,8 @@ static void MX_GPIO_Init(void);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
-uint8_t OutBuffer[87];
+CHidReport* hidReport = new CHidReport();
+
 /* USER CODE END 0 */
 int
 main(int argc, char* argv[])
@@ -56,7 +59,10 @@ main(int argc, char* argv[])
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_USB_DEVICE_Init();
+
+
+  //MX_USB_DEVICE_Init();
+  hidReport->initialize();
 
   /* USER CODE BEGIN 2 */
   /* USER CODE END 2 */
@@ -65,6 +71,8 @@ main(int argc, char* argv[])
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  GPIO_PinState buttonStatus[64];
+	  hidReport->sendReport(buttonStatus, 1000, 1000, 100, 1000, 1000, 100);
   /* USER CODE END WHILE */
   /* USER CODE BEGIN 3 */
 

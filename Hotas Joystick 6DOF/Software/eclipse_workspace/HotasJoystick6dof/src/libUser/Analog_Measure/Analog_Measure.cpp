@@ -18,6 +18,8 @@ CAnalogMeasure::CAnalogMeasure(_gpioxConfig gpioConfig, ADC_HandleTypeDef analog
 
 	timer.start();
 
+	//core->SetPin(gpioConf);
+	//adcHandle = core->SetAnalog(gpioConf, adcHandle, adcChannelConf);
 	adcHandle = setConfigADC(gpioConf.gpiox, gpioConf.initDef, adcHandle, adcChannelConf);
 }
 

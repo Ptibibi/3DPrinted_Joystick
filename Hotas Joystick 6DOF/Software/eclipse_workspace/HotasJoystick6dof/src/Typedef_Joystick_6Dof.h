@@ -19,19 +19,7 @@ struct _gpioxConfig {
 	GPIO_TypeDef* gpiox;
 	GPIO_InitTypeDef initDef;
 };
-struct Date
-{
-    int day;
-    int month;
-    int year;
 
-    Date()
-    {
-        day=0;
-        month=0;
-        year=0;
-    }
-};
 union rgb555_ {
 	uint8_t port;
 	struct {
